@@ -20,14 +20,14 @@ import { REVIEW_DATA } from './data/reviewData';
 import { useToastStore } from './stores/useToastStore';
 
 const App = () => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isLocationOpen, setIsLocationOpen] = useState(false);
+    const { showToast } = useToastStore();
+
     // /admin 경로면 관리자 대시보드 렌더링
     if (window.location.pathname === '/admin') {
         return <AdminDashboard />;
     }
-
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isLocationOpen, setIsLocationOpen] = useState(false);
-    const { showToast } = useToastStore();
 
     const handleShare = async () => {
         const url = window.location.href;
