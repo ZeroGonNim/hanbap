@@ -25,7 +25,7 @@ jobs:
       - name: Vercel 프로젝트 연결 설정
         run: |
           mkdir -p frontend/dist/.vercel
-          echo '{"orgId":"team_tCe05zvlYk9cxzHfXWWIrD6P","projectId":"prj_zKDCz6RPQwbTVbyA7l3YEIvO5iGe"}' > frontend/dist/.vercel/project.json
+          echo '{"projectId":"prj_cK7iTnVw0BaCOrPmNEtCax1tdPVt","orgId":"team_tCe05zvlYk9cxzHfXWWIrD6P"}' > frontend/dist/.vercel/project.json
 
       - name: Vercel CLI 설치
         run: npm install -g vercel@latest
