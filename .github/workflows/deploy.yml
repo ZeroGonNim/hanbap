@@ -22,32 +22,14 @@ jobs:
         run: npm install && npm run build
         working-directory: frontend
 
-      - name: Vercel output 구조 생성
+      - name: Vercel 프로젝트 연결 설정
         run: |
-          mkdir -p frontend/.vercel/output
-          cp -r frontend/dist/* frontend/.vercel/output/
-          mkdir -p frontend/.vercel/output/static
-          mv frontend/.vercel/output/*.html frontend/.vercel/output/static/ 2>/dev/null || true
-          find frontend/.vercel/output -maxdepth 1 -not -name static -not -name config.json -not -path frontend/.vercel/output | while read f; do
-            [ -f "$f" ] && mv "$f" frontend/.vercel/output/static/
-          done
-          cp -r frontend/.vercel/output/assets frontend/.vercel/output/static/assets 2>/dev/null || true
-          rm -rf frontend/.vercel/output/assets 2>/dev/null || true
-          echo '{"version":3,"routes":[{"src":"/assets/(.*)","headers":{"cache-control":"public, max-age=31536000, immutable"},"continue":true},{"handle":"filesystem"},{"src":"/(.*)", "dest":"/index.html"}]}' > frontend/.vercel/output/config.json
-
-      - name: 정리 및 재구성
-        run: |
-          rm -rf frontend/.vercel/output/static
-          mkdir -p frontend/.vercel/output/static
-          cp -r frontend/dist/* frontend/.vercel/output/static/
-          echo '{"version":3,"routes":[{"src":"/assets/(.*)","headers":{"cache-control":"public, max-age=31536000, immutable"},"continue":true},{"handle":"filesystem"},{"src":"/(.*)", "dest":"/index.html"}]}' > frontend/.vercel/output/config.json
+          mkdir -p frontend/dist/.vercel
+          echo '{"orgId":"team_tCe05zvlYk9cxzHfXWWIrD6P","projectId":"prj_zKDCz6RPQwbTVbyA7l3YEIvO5iGe"}' > frontend/dist/.vercel/project.json
 
       - name: Vercel CLI 설치
         run: npm install -g vercel@latest
 
       - name: Vercel 프로덕션 배포
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
-        working-directory: frontend
-        env:
-          VERCEL_ORG_ID: team_tCe05zvlYk9cxzHfXWWIrD6P
-          VERCEL_PROJECT_ID: prj_zKDCz6RPQwbTVbyA7l3YEIvO5iGe
+        run: vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }} --scope younggonnim-9194s-projects
+        working-directory: frontend/dist
