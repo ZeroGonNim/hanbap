@@ -21,13 +21,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 프론트엔드 의존성 설치 및 빌드
-        run: npm install && npm run build
-        working-directory: frontend
-
       - name: Vercel CLI 설치
         run: npm install -g vercel@latest
 
-      - name: 빌드 결과물 배포
+      - name: Vercel 프로덕션 배포
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: frontend
