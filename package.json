@@ -1,0 +1,26 @@
+{
+  "name": "restaurant-promotion",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "collect": "tsx src/collector.ts",
+    "start": "tsx src/pipeline.ts"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "dotenv": "^17.3.1",
+    "playwright": "^1.58.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "zod": "^4.3.6"
+  },
+  "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
+    "@google/generative-ai": "^0.24.1",
+    "googleapis": "^171.4.0",
+    "openai": "^6.27.0"
+  }
+}

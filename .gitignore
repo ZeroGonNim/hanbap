@@ -1,0 +1,35 @@
+# 환경변수 (절대 커밋 금지)
+.env
+scripts/instagram_automation/.env
+
+# 의존성
+node_modules/
+frontend/node_modules/
+
+# 빌드 결과물
+frontend/dist/
+frontend/.vercel/
+
+# 일일 리포트 (자동 생성되므로 제외)
+reports/
+
+# 로그
+*.log
+nanobanana_*.log
+gemini_*.log
+
+# AI 에이전트 스킬 캐시 (재설치 가능)
+.agent/
+.agents/
+.claude/
+
+# 임시/디버그 파일
+naver_fail*.png
+marketing_skills.txt
+frontend/build_error.txt
+frontend/bulk_fix_encoding.py
+frontend/deployments.txt
+
+# OS
+.DS_Store
+Thumbs.db
