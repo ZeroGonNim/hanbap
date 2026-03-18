@@ -74,6 +74,13 @@
   dependencies:
     undici-types "~7.18.0"
 
+"@types/nodemailer@^7.0.11":
+  version "7.0.11"
+  resolved "https://registry.npmjs.org/@types/nodemailer/-/nodemailer-7.0.11.tgz"
+  integrity sha512-E+U4RzR2dKrx+u3N4DlsmLaDC6mMZOM/TPROxA0UAPiTgI0y4CEFBmZE+coGWTjakDriRsXG368lNk1u9Q0a2g==
+  dependencies:
+    "@types/node" "*"
+
 acorn-walk@^8.1.1:
   version "8.3.5"
   resolved "https://registry.npmjs.org/acorn-walk/-/acorn-walk-8.3.5.tgz"
@@ -491,6 +498,11 @@ node-fetch@^3.3.2:
     data-uri-to-buffer "^4.0.0"
     fetch-blob "^3.1.4"
     formdata-polyfill "^4.0.10"
+
+nodemailer@^8.0.2:
+  version "8.0.2"
+  resolved "https://registry.npmjs.org/nodemailer/-/nodemailer-8.0.2.tgz"
+  integrity sha512-zbj002pZAIkWQFxyAaqoxvn+zoIwRnS40hgjqTXudKOOJkiFFgBeNqjgD3/YCR12sZnrghWYBY+yP1ZucdDRpw==
 
 object-inspect@^1.13.3:
   version "1.13.4"
