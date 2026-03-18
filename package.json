@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "collect": "tsx src/collector.ts",
-    "start": "tsx src/pipeline.ts"
+    "start": "tsx src/pipeline.ts",
+    "weekly": "tsx src/weekly_report.ts"
   },
   "license": "MIT",
   "devDependencies": {
@@ -20,7 +21,9 @@
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
     "@google/generative-ai": "^0.24.1",
+    "@types/nodemailer": "^7.0.11",
     "googleapis": "^171.4.0",
+    "nodemailer": "^8.0.2",
     "openai": "^6.27.0"
   }
 }

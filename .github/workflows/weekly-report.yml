@@ -1,0 +1,31 @@
+name: 한마음식당 주간 이메일 리포트
+
+on:
+  schedule:
+    # 매주 월요일 오전 9시 KST (UTC 00:00)
+    - cron: '0 0 * * 1'
+  workflow_dispatch: # 수동 실행 허용
+
+jobs:
+  send-weekly-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 의존성 설치
+        run: npm install
+
+      - name: 주간 리포트 이메일 발송
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: npx tsx src/weekly_report.ts
