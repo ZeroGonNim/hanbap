@@ -28,9 +28,9 @@ jobs:
       - name: Playwright 브라우저 설치
         run: npx playwright install chromium --with-deps
 
-      - name: 파이프라인 실행 (리뷰 수집 → GPT 분석 → 피드 업데이트)
+      - name: 파이프라인 실행 (리뷰 수집 → Gemini 분석 → 피드 업데이트)
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npm start
 
       - name: 변경된 리뷰 피드 커밋 및 푸시
