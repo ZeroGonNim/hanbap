@@ -22,7 +22,7 @@ const PLATFORM_MAP: Record<string, FrontendReview['platform']> = {
 const FRONTEND_REVIEWS_PATH = path.resolve('frontend/src/data/reviews.json');
 const MAX_FEED_SIZE = 20;
 
-interface DailyReport {
+export interface DailyReport {
     date: string;
     total_reviews: number;
     platform_breakdown: { naver: number, kakao: number, google: number };
@@ -44,7 +44,6 @@ class Reporter {
      * 수집된 리뷰를 프론트엔드 JSON Feed로 저장 (랜딩페이지 자동 반영)
      */
     public updateFrontendReviewFeed(reviews: Review[]): void {
-        // 유효한 플랫폼의 리뷰만 필터링 후 프론트엔드 포맷으로 변환
         const newReviews: FrontendReview[] = reviews
             .filter(r => r.content && r.content.length > 10 && PLATFORM_MAP[r.platform])
             .map(r => ({
@@ -55,7 +54,6 @@ class Reporter {
                 date: r.date,
             }));
 
-        // 기존 파일 로드 (없으면 빈 배열)
         let existing: FrontendReview[] = [];
         if (fs.existsSync(FRONTEND_REVIEWS_PATH)) {
             try {
@@ -65,7 +63,6 @@ class Reporter {
             }
         }
 
-        // 콘텐츠 해시 기반 중복 제거 후 병합 (신규 리뷰 우선)
         const seen = new Set<string>();
         const merged = [...newReviews, ...existing].filter(r => {
             const hash = createHash('md5').update(r.content).digest('hex');
@@ -74,11 +71,67 @@ class Reporter {
             return true;
         });
 
-        // 최대 MAX_FEED_SIZE개 유지
         const feed = merged.slice(0, MAX_FEED_SIZE);
-
         fs.writeFileSync(FRONTEND_REVIEWS_PATH, JSON.stringify(feed, null, 2), 'utf-8');
         console.log(`> 랜딩페이지 리뷰 피드 업데이트: ${feed.length}건 (신규 ${newReviews.length}건 반영)`);
+    }
+
+    /**
+     * 전날 리포트 로드 (증가 추이 계산용)
+     */
+    private loadPreviousReport(): DailyReport | null {
+        const files = fs.readdirSync(this.reportDir)
+            .filter(f => f.startsWith('report_') && f.endsWith('.json'))
+            .sort()
+            .reverse();
+
+        // 가장 최근 파일 (오늘 제외하고 이전 것)
+        if (files.length < 2) return null;
+        try {
+            const content = fs.readFileSync(path.join(this.reportDir, files[1]), 'utf-8');
+            return JSON.parse(content) as DailyReport;
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * 주간 리뷰 추이 계산 (최근 7일 리포트 기반)
+     */
+    private getWeeklyTrend(): { date: string, count: number }[] {
+        const files = fs.readdirSync(this.reportDir)
+            .filter(f => f.startsWith('report_') && f.endsWith('.json'))
+            .sort()
+            .reverse()
+            .slice(0, 7);
+
+        return files.map(f => {
+            try {
+                const data = JSON.parse(fs.readFileSync(path.join(this.reportDir, f), 'utf-8')) as DailyReport;
+                return { date: data.date, count: data.total_reviews };
+            } catch {
+                return { date: '?', count: 0 };
+            }
+        }).reverse();
+    }
+
+    /**
+     * 평균 평점 계산
+     */
+    private calcAvgRating(reviews: Review[]): string {
+        if (reviews.length === 0) return 'N/A';
+        const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+        return avg.toFixed(1);
+    }
+
+    /**
+     * 증감 표시 헬퍼
+     */
+    private formatDiff(current: number, previous: number): string {
+        const diff = current - previous;
+        if (diff > 0) return `▲ ${diff}`;
+        if (diff < 0) return `▼ ${Math.abs(diff)}`;
+        return `- 0`;
     }
 
     /**
@@ -87,7 +140,6 @@ class Reporter {
     public saveDailyReport(data: DailyReport): string {
         const fileName = `report_${data.date.replace(/\./g, '-')}.json`;
         const filePath = path.join(this.reportDir, fileName);
-
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
 
         const mdPath = this.generateMarkdownSummary(data);
@@ -98,28 +150,88 @@ class Reporter {
      * 사장님 열람용 요약 마크다운 생성
      */
     private generateMarkdownSummary(data: DailyReport): string {
-        const summary = `
-# 📝 한마음 식당 마케팅 자동화 일일 리포트 (${data.date})
+        const prev = this.loadPreviousReport();
+        const weeklyTrend = this.getWeeklyTrend();
 
-## 📊 수집 통계
-- **총 수집 리뷰**: ${data.total_reviews}건
-- **네이버**: ${data.platform_breakdown.naver}건 / **카카오**: ${data.platform_breakdown.kakao}건 / **구글**: ${data.platform_breakdown.google}건
+        // 누적 리뷰 수 (reviews.json 기준)
+        let totalAccumulated = 0;
+        if (fs.existsSync(FRONTEND_REVIEWS_PATH)) {
+            try {
+                const feed = JSON.parse(fs.readFileSync(FRONTEND_REVIEWS_PATH, 'utf-8'));
+                totalAccumulated = feed.length;
+            } catch { /* ignore */ }
+        }
 
-## 💡 AI 추천 마케팅 메시지
-> ${data.ai_marketing_copy.split('\n\n')[0]} // 주요 버전 1건 노출
+        // 플랫폼별 평균 평점
+        const naverReviews = data.raw_data.filter(r => r.platform === 'naver' || r.platform === 'blog');
+        const kakaoReviews = data.raw_data.filter(r => r.platform === 'kakao');
+        const googleReviews = data.raw_data.filter(r => r.platform === 'google');
 
-## 📸 SNS 홍보용 피드 (인스타그램/페이스북)
-${data.ai_marketing_copy.includes('인스타그램') ? data.ai_marketing_copy.split(/인스타그램|SNS/)[data.ai_marketing_copy.split(/인스타그램|SNS/).length - 1].replace(/^[\]\s/]+/, '') : '분석 데이터 기반 SNS 문구 생성 중...'}
+        // 주간 추이 바 차트 (텍스트)
+        const maxCount = Math.max(...weeklyTrend.map(t => t.count), 1);
+        const trendChart = weeklyTrend.map(t => {
+            const bars = Math.round((t.count / maxCount) * 10);
+            const bar = '█'.repeat(bars) + '░'.repeat(10 - bars);
+            const dateShort = t.date.split('.').slice(1).join('/');
+            return `  ${dateShort}  ${bar}  ${t.count}건`;
+        }).join('\n');
 
-## 🔍 핵심 키워드 감지
-${data.keyword_highlights.length > 0 ? data.keyword_highlights.map(k => `- #${k}`).join('\n') : '- 수집된 핵심 키워드가 없습니다.'}
+        // AI 카피 섹션 파싱
+        const copy = data.ai_marketing_copy;
+        const lunchSection = copy.includes('점심') ? copy.split(/🌙|\[저녁/)[0] : copy.split('\n\n')[0];
+        const dinnerSection = copy.includes('저녁') ? copy.split(/🌙|\[저녁/)[1]?.split(/📸|\[인스타/)[0] : '';
+        const snsSection = copy.includes('인스타') ? copy.split(/📸|\[인스타그램/)[1] : '';
 
-## 💬 실제 수집된 주요 리뷰 (최신 3건)
-${data.raw_data.slice(0, 3).map(r => `> **[${r.platform.toUpperCase()}]** ${r.content} (${r.author})`).join('\n\n')}
+        const summary = `# 📊 한마음 식당 일일 성과 리포트 (${data.date})
 
 ---
-*본 리포트는 실제 고객의 데이터를 기반으로 AI가 분석하고 가공한 결과입니다.*
-        `.trim();
+
+## 1. 오늘의 핵심 수치
+
+| 항목 | 오늘 | 전일 대비 |
+|------|------|-----------|
+| 신규 수집 리뷰 | ${data.total_reviews}건 | ${prev ? this.formatDiff(data.total_reviews, prev.total_reviews) : '첫 실행'} |
+| 누적 리뷰 (랜딩페이지) | ${totalAccumulated}건 | - |
+| 네이버 | ${data.platform_breakdown.naver}건 (평점 ${this.calcAvgRating(naverReviews)}) | ${prev ? this.formatDiff(data.platform_breakdown.naver, prev.platform_breakdown.naver) : '-'} |
+| 카카오 | ${data.platform_breakdown.kakao}건 (평점 ${this.calcAvgRating(kakaoReviews)}) | ${prev ? this.formatDiff(data.platform_breakdown.kakao, prev.platform_breakdown.kakao) : '-'} |
+| 구글 | ${data.platform_breakdown.google}건 (평점 ${this.calcAvgRating(googleReviews)}) | ${prev ? this.formatDiff(data.platform_breakdown.google, prev.platform_breakdown.google) : '-'} |
+
+---
+
+## 2. 주간 리뷰 수집 추이 (최근 7일)
+
+${trendChart || '  데이터 누적 중...'}
+
+---
+
+## 3. 오늘의 AI 마케팅 카피
+
+### 🌞 점심 타겟 (직장인)
+${lunchSection?.trim() || '생성 데이터 없음'}
+
+### 🌙 저녁 타겟 (모임/주민)
+${dinnerSection?.trim() || '생성 데이터 없음'}
+
+### 📸 인스타그램/SNS 피드
+${snsSection?.trim() || '생성 데이터 없음'}
+
+---
+
+## 4. 핵심 키워드
+${data.keyword_highlights.length > 0
+    ? data.keyword_highlights.map(k => `- #${k}`).join('\n')
+    : '- 수집된 키워드가 없습니다.'}
+
+---
+
+## 5. 오늘 수집된 주요 리뷰 (최신 5건)
+${data.raw_data.slice(0, 5).map((r, i) =>
+    `**${i + 1}. [${r.platform.toUpperCase()}] ⭐${r.rating}** (${r.author} · ${r.date})\n> ${r.content}`
+).join('\n\n')}
+
+---
+*자동 생성: ${new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })} KST*
+`.trim();
 
         const mdFileName = `summary_${data.date.replace(/\./g, '-')}.md`;
         const mdPath = path.join(this.reportDir, mdFileName);
