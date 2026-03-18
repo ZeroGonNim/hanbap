@@ -1,47 +1,138 @@
-# 🤖 Project Handover: Instagram Auto-Posting System
+# 🤖 Project Handover: 한마음식당 마케팅 자동화 시스템
 
-이 문서는 한마음식당 인스타그램 홍보 자동화 프로젝트의 현재 상태와 기술적 명세를 기록합니다. 대화가 종료된 후에도 다음 작업자가 이 내용을 바탕으로 작업을 즉시 재개할 수 있습니다.
+이 문서는 한마음식당 마케팅 자동화 프로젝트의 현재 상태와 기술적 명세를 기록합니다. 대화가 종료된 후에도 다음 작업자가 이 내용을 바탕으로 작업을 즉시 재개할 수 있습니다.
 
 ---
 
-## 1. 🚀 프로젝트 개요 (Status: Verifying)
-한마음식당의 인스타그램 홍보를 위해 메뉴 및 리뷰 데이터를 기반으로 이미지를 확보하고 자동 포스팅하는 시스템입니다.
+## 1. 🚀 시스템 현황 (Status: 운영 중)
 
-- **인스타그램 계정**: [@hanbap_doksan](https://www.instagram.com/hanbap_doksan/)
-- **핵심 기술**: Node.js, Meta Graph API, Google Drive API, Gemini 3.1 (Nano Banana 2)
+### 자동화 파이프라인
+- **매일 09:00 KST** — GitHub Actions가 리뷰 수집 → Gemini 분석 → 랜딩페이지 리뷰 업데이트 → Vercel 자동 배포
+- **매주 월요일 09:00 KST** — 주간 성과 이메일 리포트 발송 (younggonnim@gmail.com)
+- **코드 푸시 시** — GitHub Actions → Vercel CLI 자동 배포
 
-## 2. 🛠️ 기술적 구현 사항 (Infrastructure)
+### 인스타그램 자동 포스팅
+- **계정**: [@hanbap_doksan](https://www.instagram.com/hanbap_doksan/)
+- **핵심 기술**: Node.js, Meta Graph API, Google Drive API, Gemini
+- **발행 비율**: 메뉴 홍보(70%) / 고객 리뷰(30%) 무작위 교차 발행
+- **예약 시스템**: `scheduled_posts.json` 통해 특정 날짜 포스팅 선점
 
-### ✅ 스마트 이미지 자산 파이프라인
-- **실물 사진 연동**: 구글 드라이브 폴더(`1Z9h_10voHci35vqz5F7UKZFLitpdudWD`)에서 메뉴명과 일치하는 파일을 우선 검색합니다.
-- **AI 이미지 생성 폴백**: 드라이브에 사진이 없을 경우, Gemini 3.1을 통해 음식 사진을 생성합니다. (현재 쿼터 제한으로 로직만 대기 중)
-- **비주얼 스타일 최적화**: 기존 인기 게시물을 분석하여 **"원목 테이블, 60도 하이 앵글, 풍성한 밑반찬 상차림"** 무드를 AI 프롬프트에 이식 완료했습니다.
+---
 
-### ✅ 하이브리드 포스팅 로직
-- **발행 비율**: 메뉴 홍보(70%)와 고객 실제 리뷰(30%)를 무작위로 교차 발행합니다.
-- **예약 시스템**: `scheduled_posts.json`을 통해 특정 날짜의 포스팅을 선점할 수 있습니다.
-- **KST 보정**: 한국 시간대(GMT+9) 기준 날짜 인식을 적용했습니다.
+## 2. 🛠️ 기술 스택
+
+| 영역 | 기술 |
+|------|------|
+| 백엔드 | TypeScript, Node.js, Playwright, Zod |
+| AI 분석 | Gemini 1.5 Flash (`src/analyzer.ts`) |
+| 프론트엔드 | React 19, Tailwind CSS 4, Zustand, Framer Motion, Vite |
+| 배포 | Vercel (CLI 배포 방식), GitHub Actions |
+| 이메일 | Nodemailer + Gmail SMTP |
+| 저장소 | GitHub (ZeroGonNim/hanbap) |
+
+---
 
 ## 3. 📂 주요 파일 및 경로
-- **실행 스크립트**: `scripts/instagram_automation/integrated_auto_promo.js`
-- **설정 파일**: `scripts/instagram_automation/.env` (토큰 및 API 키)
-- **예약 장부**: `scripts/instagram_automation/scheduled_posts.json`
-- **데이터 소스**:
-  - `frontend/src/data/menuData.ts` (메뉴 정보)
-  - `frontend/src/data/reviewData.ts` (고객 후기)
 
-## 4. 📝 대화 메모리 및 특이사항
-- **예약 확인**: **2026-03-18(내일) 된장찌개** 포스팅 예약이 시스템에 등록되어 있습니다.
-- **사용자 선호**: '정갈한 스튜디오 샷'보다는 식당 현장의 **'따뜻하고 정겨운 상차림'** 분위기를 선호하며, 이를 나노바나나 프롬프트에 반영했습니다.
-- **모바일 연동**: 복잡한 API 설정 대신 사용자와의 채팅이나 파일 직접 수정을 통한 간편한 예약 방식을 지향합니다.
-- **연동 성공**: 인스타그램 포스팅 시 웹사이트 '오늘의 메뉴'가 실시간으로 동기화되는 `TodayPromo` 시스템이 구축되었습니다.
+### 백엔드 (자동화)
+| 파일 | 역할 |
+|------|------|
+| `src/pipeline.ts` | 전체 워크플로우 오케스트레이션 (수집→분석→저장→배포) |
+| `src/collector.ts` | 4개 플랫폼 리뷰 크롤러 (네이버/카카오/구글/블로그) |
+| `src/analyzer.ts` | Gemini 기반 점심/저녁 타겟별 마케팅 카피 생성 |
+| `src/reporter.ts` | 일일 리포트 + 프론트엔드 JSON Feed + stats.json 생성 |
+| `src/mailer.ts` | Gmail SMTP 이메일 발송 |
+| `src/weekly_report.ts` | 주간 리포트 집계 및 이메일 발송 |
 
-## 5. 🔜 향후 과제
-- Gemini API 유료 티어 전환 또는 쿼터 확보 시 AI 이미지 생성이 즉시 활성화됩니다.
-- GitHub Actions 연동 시 완전 무인 자동화(운영체제 무관)가 가능합니다.
-- **[확장성]** 이번 프로젝트의 모든 시행착오(API 안정성, 드라이브 연동, AI 프롬프트 최적화 등)를 집대성한 **'마스터 템플릿'**을 구축하여, 향후 다른 홍보 사이트 제작 시 시행착오를 제로화하고 구축 속도를 극대화합니다.
-- **[데이터 리포트]** 웹사이트 방문자, SNS 도달률, 신규 리뷰 현황을 종합하여 주간/월간 단위로 이메일 레포트를 발송하는 시스템을 구축합니다.
-- **[디자인 고도화]** 웹사이트의 경쟁력을 높이기 위해 유리 질감(Glassmorphism), 고급 애니메이션, 브랜드 타이포그래피를 적용한 프리미엄 디자인 개편을 진행합니다.
+### 프론트엔드
+| 파일 | 역할 |
+|------|------|
+| `frontend/src/main.tsx` | 라우팅 분기 (`/admin` → AdminDashboard) |
+| `frontend/src/App.tsx` | 메인 랜딩페이지 |
+| `frontend/src/pages/AdminDashboard.tsx` | 관리자 대시보드 (비밀번호: hanbap2026) |
+| `frontend/src/data/reviews.json` | 파이프라인이 자동 업데이트하는 리뷰 데이터 |
+| `frontend/public/stats.json` | 관리자 대시보드용 통계 데이터 |
+
+### 인스타그램 자동화
+| 파일 | 역할 |
+|------|------|
+| `scripts/instagram_automation/integrated_auto_promo.js` | 통합 자동 포스팅 |
+| `scripts/instagram_automation/.env` | 토큰 및 API 키 |
+| `scripts/instagram_automation/scheduled_posts.json` | 예약 장부 |
+
+### GitHub Actions 워크플로우
+| 파일 | 스케줄 |
+|------|--------|
+| `.github/workflows/daily-pipeline.yml` | 매일 09:00 KST — 리뷰 수집 파이프라인 |
+| `.github/workflows/weekly-report.yml` | 매주 월요일 09:00 KST — 주간 이메일 |
+| `.github/workflows/deploy.yml` | main 푸시 시 — Vercel 자동 배포 |
 
 ---
-*Last Updated: 2026-03-17 22:15 KST*
+
+## 4. 🔑 환경변수 및 시크릿
+
+### 로컬 `.env` (루트)
+```
+GEMINI_API_KEY=...
+GMAIL_USER=younggonnim@gmail.com
+GMAIL_APP_PASSWORD=...
+```
+
+### GitHub Secrets (ZeroGonNim/hanbap → Settings → Secrets)
+```
+VERCEL_TOKEN — Vercel 배포용 토큰
+GEMINI_API_KEY — Gemini API 키
+GMAIL_USER — Gmail 주소
+GMAIL_APP_PASSWORD — Gmail 앱 비밀번호 (16자리)
+```
+
+---
+
+## 5. ⚠️ Vercel 배포 주의사항 (시행착오 기록)
+
+### 현재 작동하는 배포 구조
+```
+GitHub Actions에서:
+1. frontend/ 폴더에서 npm install && npm run build
+2. frontend/dist/.vercel/project.json에 프로젝트 ID 주입
+3. vercel deploy --prod --yes --token=TOKEN --scope younggonnim-9194s-projects
+4. working-directory: frontend/dist
+```
+
+### 절대 하지 말 것
+- **Root Directory 설정 + working-directory 동시 사용 금지** — 경로가 이중 적용됨
+- **기존 "frontend" 프로젝트 사용 금지** — 고장 상태 (Unexpected error 반복)
+- **Hobby 플랜에서 GitHub 웹훅 자동 배포 의존 금지** — 커밋 작성자 불일치로 Blocked됨
+
+### 현재 Vercel 프로젝트 정보
+- **프로젝트명**: hanbap (신규 생성, 2026-03-18)
+- **Project ID**: `prj_cK7iTnVw0BaCOrPmNEtCax1tdPVt`
+- **Org ID**: `team_tCe05zvlYk9cxzHfXWWIrD6P`
+- **도메인**: `hanbap.vercel.app`
+- **Scope**: `younggonnim-9194s-projects`
+
+---
+
+## 6. 📝 대화 메모리 및 특이사항
+- **사용자 선호**: 기술 용어 최소화, 한번에 정리해서 전달, 가능한 한 직접 처리
+- **인스타그램 비주얼**: '정갈한 스튜디오 샷'보다 **'따뜻하고 정겨운 상차림'** 분위기 선호
+- **모바일 연동**: 복잡한 API 설정 대신 파일 직접 수정 통한 간편한 방식 지향
+- **TodayPromo 연동**: 인스타그램 포스팅 시 웹사이트 '오늘의 메뉴' 실시간 동기화 구축됨
+- **QR코드/오프라인 안내문**: 별도 준비 중 (이 프로젝트 범위 밖)
+
+---
+
+## 7. 🔜 남은 작업
+
+### 단기
+1. **카카오톡 비즈니스 API 실연동** — 카카오 채널 개설 필요
+2. **네이버 플레이스 답글 AI 초안 생성** — 수집 리뷰별 답글 초안을 reports/에 저장
+
+### 기타 확장
+- Gemini API 쿼터 확보 시 AI 이미지 생성 활성화
+- 관리자 대시보드 A방식 추가 기능 (실시간 Vercel Analytics 연동)
+- 웹사이트 디자인 고도화 (Glassmorphism, 브랜드 타이포그래피)
+- 마스터 템플릿 구축 (다른 홍보 사이트 재활용)
+
+---
+*Last Updated: 2026-03-18 15:30 KST*
