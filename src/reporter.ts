@@ -20,6 +20,7 @@ const PLATFORM_MAP: Record<string, FrontendReview['platform']> = {
 };
 
 const FRONTEND_REVIEWS_PATH = path.resolve('frontend/src/data/reviews.json');
+const FRONTEND_STATS_PATH = path.resolve('frontend/public/stats.json');
 const MAX_FEED_SIZE = 20;
 
 export interface DailyReport {
@@ -74,6 +75,51 @@ class Reporter {
         const feed = merged.slice(0, MAX_FEED_SIZE);
         fs.writeFileSync(FRONTEND_REVIEWS_PATH, JSON.stringify(feed, null, 2), 'utf-8');
         console.log(`> 랜딩페이지 리뷰 피드 업데이트: ${feed.length}건 (신규 ${newReviews.length}건 반영)`);
+    }
+
+    /**
+     * 관리자 대시보드용 stats.json 생성 (frontend/public/stats.json)
+     */
+    public updateStatsJson(data: DailyReport): void {
+        const weeklyTrend = this.getWeeklyTrend();
+
+        let totalAccumulated = 0;
+        let recentReviews: unknown[] = [];
+        if (fs.existsSync(FRONTEND_REVIEWS_PATH)) {
+            try {
+                const feed = JSON.parse(fs.readFileSync(FRONTEND_REVIEWS_PATH, 'utf-8'));
+                totalAccumulated = feed.length;
+                recentReviews = feed.slice(0, 5);
+            } catch { /* ignore */ }
+        }
+
+        // AI 카피 섹션 파싱
+        const copy = data.ai_marketing_copy;
+        const lunchMatch = copy.match(/🌞[^\n]*\n([\s\S]*?)(?=🌙|$)/);
+        const dinnerMatch = copy.match(/🌙[^\n]*\n([\s\S]*?)(?=📸|$)/);
+        const snsMatch = copy.match(/📸[^\n]*\n([\s\S]*?)$/);
+
+        const stats = {
+            lastUpdated: data.date,
+            today: {
+                total: data.total_reviews,
+                naver: data.platform_breakdown.naver,
+                kakao: data.platform_breakdown.kakao,
+                google: data.platform_breakdown.google,
+            },
+            weeklyTrend,
+            topKeywords: data.keyword_highlights.slice(0, 8),
+            aiCopy: {
+                lunch: lunchMatch?.[1]?.trim() ?? copy.split('\n\n')[0],
+                dinner: dinnerMatch?.[1]?.trim() ?? '',
+                sns: snsMatch?.[1]?.trim() ?? '',
+            },
+            totalAccumulated,
+            recentReviews,
+        };
+
+        fs.writeFileSync(FRONTEND_STATS_PATH, JSON.stringify(stats, null, 2), 'utf-8');
+        console.log('> 관리자 대시보드 stats.json 업데이트 완료');
     }
 
     /**

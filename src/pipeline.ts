@@ -56,6 +56,20 @@ async function runAutomationPipeline() {
             raw_data: combined
         });
 
+        // 6. 관리자 대시보드 stats.json 업데이트
+        reporter.updateStatsJson({
+            date: dateStr,
+            total_reviews: combined.length,
+            platform_breakdown: {
+                naver: naverReviews.length + naverBlogs.length,
+                kakao: kakao.length,
+                google: google.length
+            },
+            keyword_highlights: Array.from(new Set(combined.flatMap(r => r.keywords || []))),
+            ai_marketing_copy: aiCopy,
+            raw_data: combined
+        });
+
         console.log('\n--- ✅ 파이프라인 실행 완료 ---');
         console.log(`> 저장된 리포트: ${summaryPath}`);
         console.log(`> 랜딩페이지 자동 반영 완료: frontend/src/data/reviews.json`);

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Analytics } from '@vercel/analytics/react';
+import AdminDashboard from './pages/AdminDashboard';
 import { motion } from 'framer-motion';
 import { MessageCircle, Phone, MapPin } from 'lucide-react';
 import Navigation from './components/Navigation';
@@ -19,6 +20,11 @@ import { REVIEW_DATA } from './data/reviewData';
 import { useToastStore } from './stores/useToastStore';
 
 const App = () => {
+    // /admin 경로면 관리자 대시보드 렌더링
+    if (window.location.pathname === '/admin') {
+        return <AdminDashboard />;
+    }
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLocationOpen, setIsLocationOpen] = useState(false);
     const { showToast } = useToastStore();
