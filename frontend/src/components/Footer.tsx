@@ -19,10 +19,10 @@ const Footer: React.FC<FooterProps> = ({ onShare }) => {
                             <span>{STORE_INFO.address}</span>
                         </p>
                         <span className="hidden sm:inline text-warm-beige/30">|</span>
-                        <p className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors" onClick={() => window.location.href = `tel:${STORE_INFO.phone}`}>
-                            <Phone size={12} className="shrink-0" />
+                        <a href={`tel:${STORE_INFO.phone}`} className="flex items-center gap-1.5 hover:text-white transition-colors">
+                            <Phone size={12} className="shrink-0" aria-hidden="true" />
                             <span>{STORE_INFO.phone}</span>
-                        </p>
+                        </a>
                     </div>
                 </div>
 

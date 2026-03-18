@@ -10,6 +10,12 @@ interface LocationModalProps {
 }
 
 const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose }) => {
+    React.useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+        if (isOpen) document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
+    }, [isOpen, onClose]);
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -17,6 +23,9 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="location-modal-title"
                     className="fixed inset-0 z-[100] bg-brand/90 backdrop-blur-xl p-6 flex flex-col justify-center"
                 >
                     <motion.div
@@ -26,6 +35,7 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose }) => {
                     >
                         <button
                             onClick={onClose}
+                            aria-label="오시는 길 닫기"
                             className="absolute top-6 right-6 w-10 h-10 rounded-full bg-brand/5 flex items-center justify-center text-brand hover:bg-brand/10 transition-all z-10"
                         >
                             <X size={20} />
@@ -33,7 +43,7 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose }) => {
 
                         <div className="space-y-8">
                             <div className="text-center">
-                                <h2 className="text-3xl font-serif font-bold text-brand mb-2">오시는 길</h2>
+                                <h2 id="location-modal-title" className="text-3xl font-serif font-bold text-brand mb-2">오시는 길</h2>
                                 <p className="text-brand/70 text-sm italic mb-6">정성을 다해 모시겠습니다</p>
                             </div>
 

@@ -15,7 +15,7 @@ const Toast: React.FC = () => {
                     exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                     className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-48px)] max-w-sm"
                 >
-                    <div className="bg-brand text-white px-6 py-4 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3 backdrop-blur-lg">
+                    <div role="alert" className="bg-brand text-white px-6 py-4 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3 backdrop-blur-lg">
                         <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                             <Info size={18} />
                         </div>

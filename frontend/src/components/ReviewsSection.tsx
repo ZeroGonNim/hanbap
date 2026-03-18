@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronRight, RefreshCw } from 'lucide-react';
 import { STORE_INFO } from '../constants/storeInfo';
@@ -15,13 +15,19 @@ interface ReviewsSectionProps {
     reviews: Review[];
 }
 
+const PLATFORM_COLORS: Record<string, { bg: string, text: string }> = {
+    'Kakao': { bg: 'bg-[#FEE500]', text: 'text-black' },
+    'Naver': { bg: 'bg-[#03C75A]', text: 'text-white' },
+    'Google': { bg: 'bg-[#4285F4]', text: 'text-white' },
+};
+
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
     const [hasShuffled, setHasShuffled] = useState(false);
-    
-    // 초기 상태에서 정렬된 리뷰를 바로 보유하도록 설정하여 (오른쪽 스크롤 밀림(Anchoring) 방지)
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const [displayReviews, setDisplayReviews] = useState<Review[]>(() => {
         if (reviews.length > 0) {
-            const latest = [...reviews].sort((a, b) => 
+            const latest = [...reviews].sort((a, b) =>
                 new Date(b.date.replace(/\./g, '-')).getTime() - new Date(a.date.replace(/\./g, '-')).getTime()
             );
             return latest.slice(0, 6);
@@ -30,17 +36,6 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
     });
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // 초기 로딩: 최신순 정렬
-    useEffect(() => {
-        if (reviews.length > 0 && !hasShuffled) {
-            const latest = [...reviews].sort((a, b) => 
-                new Date(b.date.replace(/\./g, '-')).getTime() - new Date(a.date.replace(/\./g, '-')).getTime()
-            );
-            setDisplayReviews(latest.slice(0, 6));
-        }
-    }, [reviews, hasShuffled]);
-
-    // 리뷰 무작위 셔플 함수 (이후 새로고침 시 호출)
     const shuffleReviews = useCallback((e?: React.MouseEvent) => {
         if (e) {
             e.preventDefault();
@@ -51,13 +46,9 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
             const shuffled = [...reviews].sort(() => Math.random() - 0.5);
             setDisplayReviews(shuffled.slice(0, 6));
             setIsRefreshing(false);
-            
-            // 셔플 직후 가로 스크롤 영역을 맨 처음(좌측)으로 원복
-            const container = document.getElementById('reviews-container');
-            if (container) {
-                container.scrollTo({ left: 0, behavior: 'smooth' });
-            }
-        }, 300); // UI 깜빡임을 방지하기 위해 딜레이 단축 (500 -> 300)
+
+            containerRef.current?.scrollTo({ left: 0, behavior: 'smooth' });
+        }, 300);
     }, [reviews]);
 
     const getPlatformUrl = (platform: string) => {
@@ -80,18 +71,13 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
                 <span className="text-brand">생생한 방문 후기</span>
             </motion.h2>
 
-            <div 
-                id="reviews-container"
+            <div
+                ref={containerRef}
                 className="flex overflow-x-auto pb-8 -mx-6 px-6 gap-6 md:grid md:grid-cols-2 lg:grid-cols-3 md:pb-0 md:mx-0 md:px-0 snap-x snap-mandatory scrollbar-hide min-h-[300px]"
             >
                 <AnimatePresence mode="wait">
                     {displayReviews.map((review, i) => {
-                        const platformColors: Record<string, { bg: string, text: string }> = {
-                            'Kakao': { bg: 'bg-[#FEE500]', text: 'text-black' },
-                            'Naver': { bg: 'bg-[#03C75A]', text: 'text-white' },
-                            'Google': { bg: 'bg-[#4285F4]', text: 'text-white' },
-                        };
-                        const color = platformColors[review.platform] || { bg: 'bg-brand', text: 'text-white' };
+                        const color = PLATFORM_COLORS[review.platform] || { bg: 'bg-brand', text: 'text-white' };
                         const url = getPlatformUrl(review.platform);
 
                         const CardContent = (
@@ -103,9 +89,9 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
                                         <span className={`text-[10px] font-black ${color.bg} ${color.text} px-2.5 py-1 rounded-full uppercase tracking-widest`}>
                                             {review.platform}
                                         </span>
-                                        <div className="flex gap-0.5">
+                                        <div className="flex gap-0.5" aria-label={`${review.rating}점`} role="img">
                                             {[...Array(review.rating)].map((_, starIdx) => (
-                                                <Star key={starIdx} size={12} className="fill-secondary text-secondary" />
+                                                <Star key={starIdx} size={12} className="fill-secondary text-secondary" aria-hidden="true" />
                                             ))}
                                         </div>
                                     </div>
