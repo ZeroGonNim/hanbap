@@ -1,0 +1,44 @@
+name: 인스타그램 자동 포스팅
+
+on:
+  schedule:
+    # 매일 오전 11시 KST (UTC 02:00) - 점심 전 포스팅
+    - cron: '0 2 * * *'
+  workflow_dispatch: # 수동 실행 허용
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 의존성 설치
+        run: npm install
+        working-directory: scripts/instagram_automation
+
+      - name: 인스타그램 포스팅 실행
+        run: node integrated_auto_promo.js
+        working-directory: scripts/instagram_automation
+        env:
+          ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          PRODUCTION_URL: https://hanbap.vercel.app
+
+      - name: 변경사항 커밋 (today_promo 업데이트)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add frontend/public/data/ scripts/instagram_automation/scheduled_posts.json
+          git diff --staged --quiet || git commit -m "chore: 인스타그램 포스팅 및 today_promo 업데이트 $(date +'%Y-%m-%d')"
+          git push
