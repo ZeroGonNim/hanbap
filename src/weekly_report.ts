@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { sendEmail } from './mailer.js';
+import { sendTelegram } from './telegram.js';
 import { type DailyReport } from './reporter.js';
 
 const REPORT_DIR = path.resolve('reports');
@@ -161,6 +162,13 @@ async function sendWeeklyReport(): Promise<void> {
     const now = new Date().toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' });
 
     await sendEmail(`[한마음식당] 주간 마케팅 리포트 (${now})`, html);
+
+    const totalReviews = reports.reduce((s, r) => s + r.total_reviews, 0);
+    await sendTelegram(
+        `📧 [주간 리포트] ${now}\n\n` +
+        `이번 주 수집 리뷰: ${totalReviews}건\n` +
+        `이메일 발송 완료`
+    );
 
     console.log('--- ✅ 주간 리포트 발송 완료 ---');
 }

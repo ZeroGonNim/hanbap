@@ -3,6 +3,7 @@ import { ReviewCollector } from './collector.js';
 import { analyzeReviews } from './analyzer.js';
 import KakaoBridge from './kakao_bridge.js';
 import Reporter from './reporter.js';
+import { sendTelegram } from './telegram.js';
 
 async function runAutomationPipeline() {
     const collector = new ReviewCollector();
@@ -74,9 +75,17 @@ async function runAutomationPipeline() {
         console.log(`> 저장된 리포트: ${summaryPath}`);
         console.log(`> 랜딩페이지 자동 반영 완료: frontend/src/data/reviews.json`);
 
+        await sendTelegram(
+            `📊 [일일 리포트] ${dateStr}\n\n` +
+            `신규 리뷰 ${combined.length}건 수집 완료\n` +
+            `네이버 ${naverReviews.length + naverBlogs.length} / 카카오 ${kakao.length} / 구글 ${google.length}\n\n` +
+            `랜딩페이지 자동 업데이트 완료`
+        );
+
     } catch (error) {
         console.error('!!! 파이프라인 실행 중 치명적 오류 발생 !!!');
         console.error(error);
+        await sendTelegram(`❌ [파이프라인 오류] ${error}`);
     }
 }
 
