@@ -6,6 +6,9 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch: # 수동 실행 + daily-pipeline 체이닝 트리거
 
+permissions:
+  contents: write
+
 concurrency:
   group: main-branch-push
   cancel-in-progress: false
@@ -29,7 +32,12 @@ jobs:
         env:
           ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
         run: |
-          RESPONSE=$(curl -s "https://graph.facebook.com/v25.0/me?fields=id,name&access_token=${ACCESS_TOKEN}")
+          if [ -z "$ACCESS_TOKEN" ]; then
+            echo "::error::IG_ACCESS_TOKEN Secret이 비어있습니다."
+            echo "TOKEN_VALID=false" >> $GITHUB_ENV
+            exit 1
+          fi
+          RESPONSE=$(curl -s -G "https://graph.facebook.com/v25.0/me" --data-urlencode "fields=id,name" --data-urlencode "access_token=${ACCESS_TOKEN}")
           echo "API Response: $RESPONSE"
           if echo "$RESPONSE" | grep -q '"error"'; then
             echo "::error::Instagram 토큰이 만료되었거나 유효하지 않습니다."
