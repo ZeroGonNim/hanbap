@@ -20,7 +20,7 @@
 - **핵심 기술**: Node.js, Meta Graph API, Google Drive API, Gemini
 - **발행 비율**: 메뉴 홍보(70%) / 고객 리뷰(30%) 무작위 교차 발행
 - **예약 시스템**: `scheduled_posts.json` 통해 특정 날짜 포스팅 선점
-- **예약 현황**: 2026-03-19 된장찌개 포스팅 예약됨
+- **예약 현황**: 2026-03-20 된장찌개 포스팅 예약됨
 
 ### 알림 채널
 | 채널 | 내용 |
@@ -137,26 +137,35 @@ GitHub Actions 또는 로컬에서:
 
 ---
 
-## 6. ✅ 2026-03-18 완료된 작업
+## 6. ✅ 완료된 작업
 
-### 시스템 구축
+### 2026-03-18: 시스템 구축
 - Gemini API 연동 (OpenAI에서 전환)
 - 리뷰 수집 → 랜딩페이지 자동 반영 파이프라인
 - GitHub 저장소 연결 및 Actions 스케줄링
 - GitHub → Vercel 자동 배포
 
-### 고도화
+### 2026-03-18: 고도화
 - 점심/저녁 타겟별 마케팅 카피 자동 분기
 - 성과 추적 대시보드 (일일 리포트 + 관리자 페이지)
 - 주간 이메일 리포트 (매주 월요일)
 - 인스타그램 자동 포스팅 GitHub Actions 추가
 - 텔레그램 알림 봇 연동
 
-### 품질 개선 (스킬 기반 검토 후 수정)
+### 2026-03-18: 품질 개선
 - **SEO**: 독산동 키워드, 영업시간 브레이크타임, 우편번호, sameAs, og:locale
 - **성능**: lazy loading (AdminDashboard, 모달), Zustand 셀렉터, useCallback
 - **접근성**: 모달 ARIA/ESC, aria-label, role="alert", 시맨틱 마크업
 - **보안**: .env.example 실제 이메일 제거
+
+### 2026-03-19: 안정화 및 보안
+- **인스타 토큰**: 영구 Page Access Token으로 교체 (만료 없음)
+- **워크플로우 체이닝**: daily-pipeline 완료 후 instagram-post 자동 트리거
+- **충돌 방지**: concurrency 그룹 + git pull --rebase 이중 방어
+- **토큰 사전 검증**: 인스타 워크플로우에 Graph API 검증 step 추가
+- **실패 알림**: 두 워크플로우 모두 실패 시 텔레그램 알림 (토큰 만료/일반 오류 구분)
+- **에러 전파**: integrated_auto_promo.js에 process.exit(1) 추가
+- **앱 시크릿 재설정**: Meta 앱 시크릿 노출 건 재설정 완료
 
 ---
 
@@ -183,4 +192,4 @@ GitHub Actions 또는 로컬에서:
 - 마스터 템플릿 구축 (다른 홍보 사이트 재활용)
 
 ---
-*Last Updated: 2026-03-18 22:00 KST*
+*Last Updated: 2026-03-19 15:00 KST*
