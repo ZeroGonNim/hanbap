@@ -45,7 +45,9 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add frontend/src/data/reviews.json frontend/public/stats.json reports/
           git diff --staged --quiet || git commit -m "chore: 일일 리뷰 피드 및 통계 자동 업데이트 $(date +'%Y-%m-%d')"
+          git stash --include-untracked || true
           git pull --rebase origin main
+          git stash pop || true
           git push
 
       - name: 인스타그램 워크플로우 트리거
