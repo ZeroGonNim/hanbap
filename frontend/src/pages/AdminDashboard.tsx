@@ -661,7 +661,10 @@ export default function AdminDashboard() {
             ]);
             if (!statsRes.ok) throw new Error();
             setStats(await statsRes.json());
-            if (promoRes.ok) setPromo(await promoRes.json());
+            if (promoRes.ok) {
+                const promoData = await promoRes.json();
+                setPromo(promoData?.itemName ? promoData : null);
+            }
         } catch {
             setError(true);
         } finally {
