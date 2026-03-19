@@ -32,7 +32,7 @@ const TodayPromo: React.FC = () => {
         fetchPromo();
     }, []);
 
-    if (isLoading || !promo) return null;
+    if (isLoading || !promo || !promo.itemName) return null;
 
     // KST 시간 포맷 (오늘인지 확인)
     const postDate = new Date(promo.lastUpdated);
