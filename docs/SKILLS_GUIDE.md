@@ -46,10 +46,20 @@
 | :--- | :--- |
 | **agent-browser** | 웹 브라우저를 직접 제어하여 탐색 및 데이터 추출 작업을 자동화합니다. |
 
-### ⚖️ 7. 개발 표준 및 가이드라인 (Dev Standards)
+### 📌 7. 참고 에이전트 (Reference Agents)
+> 설치하지 않고 필요 시 참고용으로 사용하는 외부 에이전트 프롬프트입니다.
+> 출처: [agency-agents](https://github.com/msitarzewski/agency-agents)
+
+| 파일명 | 주요 기능 (한 줄 요약) |
+| :--- | :--- |
+| **[marketing-instagram-curator](./reference-agents/marketing-instagram-curator.md)** | 인스타그램 콘텐츠 큐레이션, 피드 전략, 해시태그 최적화. |
+| **[marketing-content-creator](./reference-agents/marketing-content-creator.md)** | 마케팅 콘텐츠 기획 및 제작 (블로그, SNS, 캠페인 등). |
+| **[specialized-korean-business-navigator](./reference-agents/specialized-korean-business-navigator.md)** | 한국 비즈니스 환경에 특화된 전략 및 커뮤니케이션 가이드. |
+
+### ⚖️ 8. 개발 표준 및 가이드라인 (Dev Standards)
 | 가이드명 | 내용 요약 |
 | :--- | :--- |
 | **[encoding-issue](./ENCODING_GUIDE.md)** | 인코딩(BOM/Mojibake) 문제 방지 및 해결 가이드 (Vite/PowerShell 환경). |
 
 ---
-*마지막 업데이트: 2026-03-18*
+*마지막 업데이트: 2026-03-19*
