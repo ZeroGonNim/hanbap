@@ -266,7 +266,7 @@ async function postToInstagram() {
 
     if (!ACCESS_TOKEN || !IG_USER_ID) {
         console.error("❌ ACCESS_TOKEN or IG_USER_ID is missing in .env");
-        return;
+        process.exit(1);
     }
 
     try {
@@ -282,7 +282,7 @@ async function postToInstagram() {
 
         if (!containerRes.ok) {
             console.error("❌ Container creation failed:", JSON.stringify(containerData, null, 2));
-            return;
+            throw new Error(`Container creation failed: ${containerData.error?.message || 'Unknown error'}`);
         }
 
         const creationId = containerData.id;
@@ -312,11 +312,22 @@ async function postToInstagram() {
         if (!publishRes.ok) {
             const publishData = await publishRes.json();
             console.error("❌ Publishing failed:", JSON.stringify(publishData, null, 2));
-            return;
+            throw new Error(`Publishing failed: ${publishData.error?.message || 'Unknown error'}`);
         }
 
         console.log("🎉 Successfully published to Instagram!");
         console.log(`Check it out: https://www.instagram.com/hanbap_doksan/`);
+
+        // 텔레그램 성공 알림
+        const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+        const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+        if (BOT_TOKEN && CHAT_ID) {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: `📸 [인스타 포스팅 완료] ${itemName}\n${caption.split('\n').slice(0, 3).join('\n')}\n\nhttps://www.instagram.com/hanbap_doksan/` })
+            });
+        }
 
         // 웹사이트와 동기화: 오늘의 메뉴 정보 저장
         try {
@@ -339,6 +350,16 @@ async function postToInstagram() {
 
     } catch (error) {
         console.error("❌ Pipeline failed:", error.message);
+        const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+        const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+        if (BOT_TOKEN && CHAT_ID) {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: `❌ [인스타 포스팅 실패] ${error.message}` })
+            });
+        }
+        process.exit(1);
     }
 }
 

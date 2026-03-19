@@ -2,9 +2,13 @@ name: 인스타그램 자동 포스팅
 
 on:
   schedule:
-    # 매일 오전 11시 KST (UTC 02:00) - 점심 전 포스팅
+    # 백업용 (daily-pipeline 체이닝 실패 시 대비)
     - cron: '0 2 * * *'
-  workflow_dispatch: # 수동 실행 허용
+  workflow_dispatch: # 수동 실행 + daily-pipeline 체이닝 트리거
+
+concurrency:
+  group: main-branch-push
+  cancel-in-progress: false
 
 jobs:
   post:
@@ -13,19 +17,33 @@ jobs:
     steps:
       - name: 저장소 체크아웃
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Node.js 설정
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: 의존성 설치
+      - name: 인스타그램 토큰 유효성 검증
+        env:
+          ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: |
+          RESPONSE=$(curl -s "https://graph.facebook.com/v25.0/me?fields=id,name&access_token=${ACCESS_TOKEN}")
+          echo "API Response: $RESPONSE"
+          if echo "$RESPONSE" | grep -q '"error"'; then
+            echo "::error::Instagram 토큰이 만료되었거나 유효하지 않습니다."
+            echo "TOKEN_VALID=false" >> $GITHUB_ENV
+            exit 1
+          fi
+          echo "TOKEN_VALID=true" >> $GITHUB_ENV
+          echo "✅ 토큰 검증 성공"
+
+      - name: 루트 의존성 설치
         run: npm install
-        working-directory: scripts/instagram_automation
 
       - name: 인스타그램 포스팅 실행
-        run: node integrated_auto_promo.js
-        working-directory: scripts/instagram_automation
+        run: node scripts/instagram_automation/integrated_auto_promo.js
         env:
           ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
@@ -43,4 +61,21 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add frontend/public/data/ scripts/instagram_automation/scheduled_posts.json
           git diff --staged --quiet || git commit -m "chore: 인스타그램 포스팅 및 today_promo 업데이트 $(date +'%Y-%m-%d')"
+          git pull --rebase origin main
           git push
+
+      - name: 실패 시 텔레그램 알림
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TOKEN_VALID: ${{ env.TOKEN_VALID }}
+        run: |
+          if [ "$TOKEN_VALID" = "false" ]; then
+            MSG="🔑 [인스타그램] 토큰이 만료되었습니다! GitHub Secrets(IG_ACCESS_TOKEN)을 갱신해주세요."
+          else
+            MSG="❌ [인스타그램 포스팅 실패] 워크플로우가 실패했습니다."
+          fi
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${TELEGRAM_CHAT_ID}\", \"text\": \"${MSG}\n확인: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
