@@ -24,7 +24,7 @@ async function testGeminiImage() {
     // Note: Imagen 3 (Nano Banana 2) might require a specific model string
     // Let's try to see if we can get a response from a text model first to verify the key
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         const result = await model.generateContent("Hello, can you generate an image description for a delicious Korean spicy pork (Jeyuk Bokkeum)?");
         const response = await result.response;
         console.log("✅ Gemini Text API is working!");

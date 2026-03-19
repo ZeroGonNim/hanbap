@@ -64,7 +64,7 @@ export async function analyzeReviews(reviews: Review[]): Promise<string> {
     console.log('🧠 Gemini에게 리뷰 분석을 요청합니다... (점심/저녁 타겟 분리)');
 
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
         const prompt = `${SYSTEM_PROMPT}\n\n[수집된 리뷰 데이터]\n${reviewsText}`;
         const result = await model.generateContent(prompt);
         return result.response.text() || '분석 결과를 생성하지 못했습니다.';

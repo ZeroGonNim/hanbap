@@ -56,9 +56,9 @@ export class ReviewCollector {
                 await this.randomDelay(500, 1000);
             }
 
-            // '더보기' 버튼이 있다면 자동 클릭
-            const moreBtn = page.locator('a._23p_s, a:has-text("더보기")');
-            if (await moreBtn.isVisible()) {
+            // '더보기' 버튼이 있다면 자동 클릭 (strict mode 방지: first() 사용)
+            const moreBtn = page.locator('a[data-pui-click-code="rvshowmore"]').first();
+            if (await moreBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
                 await moreBtn.click();
                 await this.randomDelay(1000, 2000);
             }
