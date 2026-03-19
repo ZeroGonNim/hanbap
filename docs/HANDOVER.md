@@ -20,7 +20,7 @@
 - **핵심 기술**: Node.js, Meta Graph API, Google Drive API, Gemini
 - **발행 비율**: 메뉴 홍보(70%) / 고객 리뷰(30%) 무작위 교차 발행
 - **예약 시스템**: `scheduled_posts.json` 통해 특정 날짜 포스팅 선점
-- **예약 현황**: 2026-03-20 된장찌개 포스팅 예약됨
+- **예약 현황**: 없음 (된장찌개 삭제됨, 2026-03-19)
 
 ### 알림 채널
 | 채널 | 내용 |
@@ -36,7 +36,7 @@
 | 영역 | 기술 |
 |------|------|
 | 백엔드 | TypeScript, Node.js, Playwright, Zod |
-| AI 분석 | Gemini 1.5 Flash (`src/analyzer.ts`) |
+| AI 분석 | Gemini 2.0 Flash (`src/analyzer.ts`) |
 | 프론트엔드 | React 19, Tailwind CSS 4, Zustand, Framer Motion, Vite |
 | 배포 | Vercel (CLI 배포 방식), GitHub Actions |
 | 이메일 | Nodemailer + Gmail SMTP |
@@ -169,6 +169,18 @@ GitHub Actions 또는 로컬에서:
 - **관리자 대시보드 고도화**: 다크테마, 탭(개요/마케팅/리뷰), 시스템상태 모니터, 인스타현황, 30초 자동새로고침, 빠른링크
 - **Vercel SPA 라우팅**: vercel.json routes 방식으로 /admin 404 해결
 
+### 2026-03-19: 파이프라인 수정 및 된장찌개 삭제
+- **파이프라인 3건 수정**: .gitignore reports/ 해제, Gemini 모델 1.5→2.0, 네이버 더보기 셀렉터 수정
+- **워크플로우 권한**: daily-pipeline, instagram-post에 `contents:write`, `actions:write` 추가
+- **unstaged changes 해결**: 두 워크플로우에 `git stash` 추가
+- **인스타 토큰 검증**: curl `--data-urlencode` 방식으로 변경 (특수문자 토큰 대응)
+- **된장찌개 삭제**: 인스타 자동 포스팅 메뉴 목록 및 today_promo.json 초기화
+- **TodayPromo 크래시 수정**: null 데이터 시 하얀 화면 방지 (`!promo.itemName` 체크)
+- **AdminDashboard 크래시 수정**: promo null 데이터 처리 추가
+- **참고 에이전트 추가**: `docs/reference-agents/`에 인스타 큐레이터, 콘텐츠 크리에이터, 한국 비즈니스 내비게이터
+- **SKILLS_GUIDE.md 업데이트**: 참고 에이전트 섹션 추가
+- **GitHub CLI 설치**: `gh` 인증 완료 (워크플로우 디버깅용)
+
 ---
 
 ## 7. 📝 대화 메모리 및 특이사항
@@ -194,4 +206,4 @@ GitHub Actions 또는 로컬에서:
 - 마스터 템플릿 구축 (다른 홍보 사이트 재활용)
 
 ---
-*Last Updated: 2026-03-19 16:00 KST*
+*Last Updated: 2026-03-19 23:30 KST*
