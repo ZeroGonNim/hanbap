@@ -22,10 +22,11 @@ jobs:
         run: npm install && npm run build
         working-directory: frontend
 
-      - name: Vercel 프로젝트 연결 설정
+      - name: Vercel 프로젝트 연결 및 SPA 라우팅 설정
         run: |
           mkdir -p frontend/dist/.vercel
           echo '{"projectId":"prj_cK7iTnVw0BaCOrPmNEtCax1tdPVt","orgId":"team_tCe05zvlYk9cxzHfXWWIrD6P"}' > frontend/dist/.vercel/project.json
+          cp frontend/vercel.json frontend/dist/vercel.json
 
       - name: Vercel CLI 설치
         run: npm install -g vercel@latest
