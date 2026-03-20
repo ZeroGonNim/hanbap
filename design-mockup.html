@@ -3,1083 +3,582 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>한마음식당 - 디자인 시안 "동네 단골집"</title>
+<title>한마음식당 - 고수의 명반 (Refined Heritage)</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Noto+Serif+KR:wght@400;600;700;900&family=Gamja+Flower&family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700;900&family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
-  :root {
-    --bg: #F5EDE3;
-    --bg-wood: #E8D5C0;
-    --bg-paper: #FBF7F2;
-    --text: #3B2517;
-    --text-muted: #8C7160;
-    --text-light: #B8A393;
-    --red: #C44B3F;
-    --red-deep: #A03A30;
-    --warm: #D4874D;
-    --warm-light: #F0C89A;
-    --green: #5B7A52;
-    --green-light: #8FAF7E;
-    --gold: #C9A84C;
-    --cream: #FFF8EF;
-    --wood-dark: #5C3D2E;
-    --wood-mid: #8B6347;
-
-    --font-hand: "Nanum Pen Script", cursive;
-    --font-display: "Noto Serif KR", serif;
-    --font-fun: "Gamja Flower", cursive;
-    --font-body: "Pretendard", sans-serif;
-
-    --container-sm: 640px;
-    --container-md: 768px;
-    --container-lg: 1080px;
-    --container-xl: 1280px;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
+    background: #FBF9F4;
+    color: #3B2517;
+    font-family: 'Noto Serif KR', serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
 
-  /* Wood grain texture overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 120px,
-        rgba(139,99,71,0.015) 120px,
-        rgba(139,99,71,0.015) 121px
-      ),
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 200px,
-        rgba(139,99,71,0.01) 200px,
-        rgba(139,99,71,0.01) 201px
-      );
-    pointer-events: none;
-    z-index: 0;
+  /* ===== HERO ===== */
+  .hero {
+    padding: 3.5rem 2rem;
+    text-align: center;
+    background: #F5EDE3;
+    border-bottom: 1px solid #E8D5C0;
   }
-
-  .relative { position: relative; z-index: 1; }
-
-  .section-gap {
-    padding: 0 1.25rem;
-    margin-bottom: 3.5rem;
-  }
-
-  /* Responsive container utility */
-  .container {
-    width: 100%;
-    max-width: var(--container-lg);
+  .hero-frame {
+    border: 1px solid #D4874D;
+    padding: 2.5rem 1rem;
+    max-width: 480px;
     margin: 0 auto;
   }
+  .hero-since {
+    font-size: 0.8rem;
+    letter-spacing: 0.3em;
+    color: #D4874D;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+  .hero-divider {
+    width: 30px;
+    height: 1px;
+    background: #3B2517;
+    margin: 1.25rem auto;
+  }
+  .hero-tagline {
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    color: #8C7160;
+  }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
+  /* ===== VISUAL SECTION ===== */
+  .visual {
+    padding: 3rem 2rem;
+    background: #fff;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .visual-image-wrap {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+  .visual-image {
+    width: 100%;
+    height: 400px;
+    background: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80') center/cover;
+    border-radius: 2px;
+  }
+  .visual-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #a03a30;
+    color: white;
+    padding: 1rem;
+    font-weight: 900;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.2em;
+    font-size: 0.8rem;
+  }
+  .visual-text { text-align: center; }
+  .visual-text h4 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #a03a30;
+    margin-bottom: 0.5rem;
+  }
+  .visual-text p {
+    font-size: 1rem;
+    line-height: 1.9;
+    color: #666;
+  }
+
+  /* ===== REVIEWS ===== */
+  .reviews {
+    padding: 3rem 0;
+    background: #FBF9F4;
+    border-top: 1px solid #E8D5C0;
+    border-bottom: 1px solid #E8D5C0;
+  }
+  .reviews-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 0 2rem;
+  }
+  .reviews-label {
+    font-size: 0.8rem;
+    color: #D4874D;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+  }
+  .reviews-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-top: 1rem;
+  }
+  .reviews-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 0 1.25rem 2rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  .reviews-scroll::-webkit-scrollbar { display: none; }
+  .review-card {
+    min-width: 240px;
+    width: calc(100vw - 5rem);
+    max-width: 310px;
+    background: #fff;
+    padding: 1.75rem;
+    border: 1px solid #E8D5C0;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+  }
+  .review-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .review-platform {
+    border: 1px solid;
+    padding: 2px 8px;
+    font-size: 0.65rem;
+    font-weight: 800;
+  }
+  .review-platform.naver { border-color: #03C75A; color: #03C75A; }
+  .review-platform.kakao { border-color: #FEE500; color: #3C1E1E; background: #FEE500; }
+  .review-platform.google { border-color: #4285F4; color: #4285F4; }
+  .review-stars { color: #D4874D; font-size: 0.8rem; }
+  .review-text {
+    font-size: 1rem;
+    line-height: 1.7;
+    font-weight: 700;
+    height: 80px;
+    overflow: hidden;
+  }
+  .review-author {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #8C7160;
+  }
+  .reviews-more {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .reviews-more button {
+    background: none;
+    border: 1px solid #E8D5C0;
+    padding: 8px 24px;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    color: #8C7160;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .reviews-more button:hover { border-color: #D4874D; color: #D4874D; }
+
+  /* ===== REWARDS ===== */
+  .rewards {
+    padding: 3.5rem 2rem;
+    background: #F5EDE3;
+    border-bottom: 1px solid #E8D5C0;
+  }
+  .rewards-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .rewards-label {
+    color: #a03a30;
+    font-weight: 900;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+  }
+  .rewards-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-top: 1rem;
+  }
+  .rewards-box {
+    background: #fff;
+    padding: 2.5rem 1.5rem;
+    border: 1px solid #E8D5C0;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .rewards-gift {
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+  }
+  .rewards-gift-highlight {
+    color: #a03a30;
+    border-bottom: 2px solid #a03a30;
+  }
+  .rewards-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+  .rewards-link {
+    text-decoration: none;
+    padding: 14px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    border-radius: 4px;
+    text-align: center;
+    transition: opacity 0.2s;
+  }
+  .rewards-link:hover { opacity: 0.9; }
+  .rewards-link.naver { background: #03C75A; color: white; }
+  .rewards-link.kakao { background: #FEE500; color: #3C1E1E; }
+  .rewards-link.insta { background: #111; color: white; }
+  .rewards-hashtags {
+    text-align: left;
+    padding-top: 2rem;
+    border-top: 1px dashed #E8D5C0;
+  }
+  .hashtag-group { margin-bottom: 1.5rem; }
+  .hashtag-group:last-child { margin-bottom: 0; }
+  .hashtag-label {
+    font-size: 0.7rem;
+    font-weight: 900;
+  }
+  .hashtag-label.required { color: #a03a30; }
+  .hashtag-label.optional { color: #8C7160; }
+  .hashtag-tags {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    font-family: 'Pretendard', sans-serif;
+  }
+  .hashtag-tags.required { color: #111; }
+  .hashtag-tags.optional { color: #666; }
+
+  /* ===== MENU ===== */
+  .menu-section {
+    padding: 3.5rem 2rem;
+    background: #fff;
+  }
+  .menu-section-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-family: 'Nanum Myeongjo', serif;
+  }
+  .menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 400px;
+    margin: 0 auto 2.5rem;
+    text-align: left;
+  }
+  .menu-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid #E8D5C0;
+    padding-bottom: 0.75rem;
+  }
+  .menu-row-name {
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  .menu-row-desc {
+    font-size: 0.75rem;
+    color: #8C7160;
+    margin-top: 0.2rem;
+    font-family: 'Pretendard', sans-serif;
+  }
+  .menu-row-price {
+    font-weight: 900;
+    color: #a03a30;
+    font-size: 1.2rem;
+    white-space: nowrap;
+  }
+  .menu-full-btn {
+    display: block;
+    margin: 0 auto;
+    background: none;
+    border: 1px solid #3B2517;
+    padding: 12px 32px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: inherit;
+    color: #3B2517;
+    transition: all 0.2s;
+  }
+  .menu-full-btn:hover { background: #3B2517; color: #FBF9F4; }
+
+  /* ===== FOOTER ===== */
+  .site-footer {
+    padding: 3rem 2rem;
+    background: #3B2517;
+    color: #F5EDE3;
+    text-align: center;
+  }
+  .footer-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    font-family: 'Nanum Myeongjo', serif;
+  }
+  .footer-info {
+    font-size: 0.85rem;
+    color: rgba(245,237,227,0.5);
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+  }
+  .footer-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .footer-cta {
+    width: 100%;
+    background: #F5EDE3;
+    color: #3B2517;
+    border: none;
+    padding: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 900;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+  }
+  .footer-cta:hover { background: #fff; }
+  .footer-cta.outline {
+    background: transparent;
+    border: 1px solid rgba(245,237,227,0.3);
+    color: #F5EDE3;
+  }
+  .footer-cta.outline:hover { background: rgba(245,237,227,0.1); border-color: rgba(245,237,227,0.6); }
+
+  /* ===== FULL MENU MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(59,37,23,0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+  }
+  .modal-overlay.active {
+    display: flex;
+    animation: fadeIn 0.2s ease-out;
   }
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(-1deg); }
-    50% { transform: rotate(1deg); }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  @keyframes steam {
-    0% { opacity: 0; transform: translateY(0) scale(1); }
-    50% { opacity: 0.6; }
-    100% { opacity: 0; transform: translateY(-30px) scale(1.5); }
-  }
-
-  /* ===== NAVIGATION ===== */
-  .nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 0.9rem 1.25rem;
-    padding-top: calc(0.9rem + env(safe-area-inset-top, 0px));
-    background: rgba(245,237,227,0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 2px solid var(--bg-wood);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .nav-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .modal {
+    background: #FBF9F4;
     width: 100%;
-    max-width: var(--container-lg);
-    margin: 0 auto;
+    max-width: 500px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #E8D5C0;
+    animation: slideUp 0.3s ease-out;
   }
-  .nav-brand {
-    font-family: var(--font-hand);
-    font-size: 1.8rem;
-    color: var(--wood-dark);
-    line-height: 1;
-  }
-  .nav-links {
-    display: none;
-    list-style: none;
-    gap: 2rem;
-    align-items: center;
-  }
-  .nav-links a {
-    font-family: var(--font-fun);
-    font-size: 1.1rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.2s;
+  .modal-header {
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid #E8D5C0;
     position: relative;
+    flex-shrink: 0;
   }
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0; right: 0;
-    height: 3px;
-    background: var(--warm);
-    border-radius: 2px;
-    transform: scaleX(0);
-    transition: transform 0.2s;
+  .modal-header h2 {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 1.8rem;
+    font-weight: 800;
   }
-  .nav-links a:hover { color: var(--wood-dark); }
-  .nav-links a:hover::after { transform: scaleX(1); }
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+  .modal-header p {
+    font-size: 0.85rem;
+    color: #8C7160;
+    margin-top: 0.25rem;
   }
-  .nav-cta {
-    background: var(--red);
-    color: white;
-    border: none;
-    padding: 0.55rem 1.2rem;
-    border-radius: 12px;
-    font-family: var(--font-fun);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 3px 0 var(--red-deep), 0 6px 16px rgba(196,75,63,0.2);
-  }
-  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 0 var(--red-deep), 0 8px 20px rgba(196,75,63,0.25); }
-  .nav-cta:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--red-deep); }
-  .nav-cta:focus-visible { outline: 3px solid rgba(196,75,63,0.4); outline-offset: 2px; }
-
-  /* Mobile hamburger */
-  .nav-hamburger {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-  }
-  .nav-hamburger span {
-    width: 22px;
-    height: 2px;
-    background: var(--wood-dark);
-    border-radius: 2px;
-    transition: all 0.3s;
-  }
-
-  /* Mobile menu overlay */
-  .mobile-menu {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(245,237,227,0.97);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    z-index: 99;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-  }
-  .mobile-menu.active { display: flex; animation: fadeIn 0.2s ease-out; }
-  .mobile-menu a {
-    font-family: var(--font-hand);
-    font-size: 2.2rem;
-    color: var(--wood-dark);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .mobile-menu a:hover { color: var(--red); }
-  .mobile-menu-close {
+  .modal-close {
     position: absolute;
     top: 1.25rem;
     right: 1.25rem;
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: var(--wood-dark);
-    cursor: pointer;
-    padding: 0.5rem;
-    line-height: 1;
-  }
-
-  /* ===== HERO ===== */
-  .hero {
-    position: relative;
-    min-height: 100vh;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    overflow: hidden;
-    padding: 0 1.25rem 2.5rem;
-  }
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(to bottom, transparent 20%, rgba(59,37,23,0.1) 50%, var(--bg) 95%),
-      url('https://images.unsplash.com/photo-1590301157890-4810ed352733?w=1200&q=80') center/cover no-repeat;
-  }
-  .hero-content {
-    position: relative;
-    z-index: 10;
-    width: 100%;
-    max-width: var(--container-lg);
-    margin: 0 auto;
-  }
-  .hero-card {
-    background: var(--cream);
-    border-radius: 24px;
-    padding: 2.5rem 2rem;
-    max-width: 500px;
-    box-shadow:
-      0 2px 0 var(--bg-wood),
-      0 12px 40px rgba(59,37,23,0.15);
-    border: 1px solid rgba(200,180,160,0.3);
-    animation: fadeUp 0.8s ease-out;
-    background-image:
-      radial-gradient(circle at 20% 80%, rgba(212,135,77,0.04) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(91,122,82,0.04) 0%, transparent 50%);
-    position: relative;
-  }
-  .hero-label {
-    font-family: var(--font-fun);
-    color: var(--warm);
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .hero-title {
-    font-family: var(--font-hand);
-    font-size: clamp(2.8rem, 8vw, 4rem);
-    color: var(--wood-dark);
-    line-height: 1.15;
-    margin-bottom: 0.5rem;
-  }
-  .hero-title-sub {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--red);
-    margin-bottom: 1.25rem;
-  }
-  .hero-desc {
-    font-family: var(--font-body);
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    line-height: 1.75;
-  }
-  .stamp {
-    position: absolute;
-    top: -12px;
-    right: 20px;
-    width: 72px;
-    height: 72px;
-    border: 3px solid var(--red);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-hand);
-    font-size: 0.95rem;
-    color: var(--red);
-    transform: rotate(12deg);
-    background: var(--cream);
-    box-shadow: 0 2px 8px rgba(196,75,63,0.15);
-    line-height: 1.1;
-    text-align: center;
-  }
-
-  /* ===== TODAY'S PROMO — 칠판 ===== */
-  .promo-frame {
-    border: 6px solid var(--wood-mid);
-    border-radius: 24px;
-    padding: 4px;
-    max-width: 620px;
-    margin: 0 auto;
-    box-shadow: 0 4px 20px rgba(59,37,23,0.15);
-    background: var(--wood-mid);
-  }
-  .promo {
-    max-width: 100%;
-    background: #2E2118;
-    border-radius: 20px;
-    padding: 2rem 1.75rem;
-    position: relative;
-    overflow: hidden;
-    box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
-    background-image:
-      radial-gradient(circle at 30% 40%, rgba(255,255,255,0.02) 0%, transparent 60%),
-      radial-gradient(circle at 70% 70%, rgba(255,255,255,0.015) 0%, transparent 50%);
-  }
-  .promo::before {
-    content: '';
-    position: absolute;
-    top: 8px; left: 8px; right: 8px; bottom: 8px;
-    border: 1px dashed rgba(255,255,255,0.12);
-    border-radius: 14px;
-    pointer-events: none;
-  }
-  .promo-header { text-align: center; margin-bottom: 1.25rem; }
-  .promo-today {
-    font-family: var(--font-fun);
-    color: var(--warm-light);
-    font-size: 1rem;
-    letter-spacing: 0.1em;
-  }
-  .promo-menu-name {
-    font-family: var(--font-hand);
-    color: white;
-    font-size: 2.2rem;
-    margin-top: 0.25rem;
-  }
-  .promo-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 1rem 0; }
-  .promo-caption {
-    font-family: var(--font-fun);
-    color: rgba(255,255,255,0.7);
-    font-size: 1.05rem;
-    line-height: 1.7;
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  .promo-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .promo-date-label {
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.35);
-    font-family: var(--font-body);
-  }
-  .promo-insta-link {
-    font-family: var(--font-fun);
-    color: var(--warm-light);
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: color 0.2s;
-  }
-  .promo-insta-link:hover { color: white; }
-  .promo-insta-link:focus-visible { outline: 2px solid var(--warm-light); outline-offset: 2px; }
-  .chalk-star {
-    position: absolute;
-    color: rgba(255,255,255,0.08);
-    font-size: 2.5rem;
-    font-family: var(--font-hand);
-    user-select: none;
-  }
-
-  /* ===== SECTION HEADING ===== */
-  .section-head {
-    text-align: center;
-    margin-bottom: 2rem;
-    position: relative;
-  }
-  .section-head h2 {
-    font-family: var(--font-hand);
-    font-size: 2.2rem;
-    color: var(--wood-dark);
-    display: inline-block;
-    position: relative;
-  }
-  .section-head h2::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: -8px; right: -8px;
-    height: 8px;
-    background: var(--warm-light);
-    opacity: 0.5;
-    border-radius: 4px;
-    z-index: -1;
-  }
-  .section-head p {
-    font-family: var(--font-fun);
-    color: var(--text-muted);
-    font-size: 1rem;
-    margin-top: 0.5rem;
-  }
-
-  /* ===== MENU CARDS ===== */
-  .menu-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    max-width: var(--container-sm);
-    margin: 0 auto 1.5rem;
-  }
-  .menu-card {
-    background: var(--cream);
-    border-radius: 4px 4px 4px 20px;
-    padding: 1.75rem;
-    position: relative;
-    box-shadow:
-      2px 3px 0 rgba(59,37,23,0.06),
-      0 6px 20px rgba(59,37,23,0.06);
-    border-top: 3px solid var(--warm);
-    transition: all 0.2s;
-    overflow: hidden;
-  }
-  .menu-card::before {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 20px; height: 20px;
-    background: linear-gradient(135deg, var(--bg) 50%, var(--bg-wood) 50%);
-  }
-  .menu-card:hover {
-    transform: rotate(-0.5deg) translateY(-3px);
-    box-shadow: 3px 6px 0 rgba(59,37,23,0.08), 0 12px 30px rgba(59,37,23,0.1);
-  }
-  .menu-name {
-    font-family: var(--font-hand);
-    font-size: 1.7rem;
-    color: var(--wood-dark);
-    margin-bottom: 0.3rem;
-  }
-  .menu-desc {
-    font-family: var(--font-body);
-    color: var(--text-muted);
-    font-size: 0.82rem;
-    line-height: 1.6;
-    margin-bottom: 1rem;
-  }
-  .menu-price {
-    font-family: var(--font-fun);
-    display: inline-block;
-    background: var(--red);
-    color: white;
-    padding: 0.3rem 0.85rem;
-    border-radius: 10px;
-    font-size: 1.05rem;
-    box-shadow: 0 2px 0 var(--red-deep);
-  }
-  .full-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    max-width: var(--container-sm);
-    margin: 0 auto;
-    padding: 1rem;
-    border: 2px dashed var(--wood-mid);
-    background: transparent;
-    color: var(--wood-mid);
-    border-radius: 14px;
-    font-family: var(--font-fun);
-    font-size: 1.15rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .full-menu-btn:hover { background: var(--wood-mid); color: white; border-style: solid; }
-  .full-menu-btn:focus-visible { outline: 3px solid rgba(139,99,71,0.3); outline-offset: 2px; }
-
-  /* ===== REWARDS — 쿠폰 ===== */
-  .rewards-wrapper { max-width: var(--container-sm); margin: 0 auto; }
-  .rewards {
-    background: var(--cream);
-    border-radius: 20px;
-    padding: 2rem 1.75rem;
-    position: relative;
-    border: 2px dashed var(--warm);
-    box-shadow: 0 6px 24px rgba(59,37,23,0.08);
-  }
-  .rewards::before, .rewards::after {
-    content: '';
-    position: absolute;
-    width: 24px; height: 24px;
-    background: var(--bg);
-    border-radius: 50%;
-    top: 50%;
-    transform: translateY(-50%);
-    border: 2px dashed var(--warm);
-  }
-  .rewards::before { left: -14px; }
-  .rewards::after { right: -14px; }
-  .rewards-title {
-    font-family: var(--font-hand);
-    font-size: 2rem;
-    color: var(--wood-dark);
-    text-align: center;
-    margin-bottom: 0.25rem;
-  }
-  .rewards-subtitle {
-    font-family: var(--font-fun);
-    color: var(--red);
-    text-align: center;
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
-  }
-  .rewards-gift {
-    text-align: center;
-    background: linear-gradient(135deg, var(--warm-light), #FDECD0);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  .rewards-gift-text {
-    font-family: var(--font-hand);
-    font-size: 1.8rem;
-    color: var(--wood-dark);
-  }
-  .rewards-gift-desc {
-    font-family: var(--font-fun);
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    margin-top: 0.25rem;
-  }
-  .mission-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
-  .mission-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    background: white;
-    padding: 1.25rem;
-    border-radius: 14px;
-    border-left: 4px solid var(--warm);
-    box-shadow: 0 2px 8px rgba(59,37,23,0.04);
-  }
-  .mission-num {
     width: 32px; height: 32px;
-    background: var(--warm);
-    color: white;
-    border-radius: 50%;
+    border: 1px solid #E8D5C0;
+    background: none;
+    color: #8C7160;
+    font-size: 1.2rem;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--font-fun);
-    font-size: 1.1rem;
-    flex-shrink: 0;
-  }
-  .mission-body { flex: 1; }
-  .mission-text {
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    color: var(--text);
-  }
-  .mission-links { display: flex; gap: 6px; flex-wrap: wrap; }
-  .m-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 0.3rem 0.7rem;
-    border-radius: 8px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-decoration: none;
     transition: all 0.15s;
   }
-  .m-link:hover { filter: brightness(1.1); transform: translateY(-1px); }
-  .m-link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
-  .m-link.naver { background: #03C75A; color: white; }
-  .m-link.kakao { background: #FEE500; color: #3C1E1E; }
-  .m-link.insta { background: linear-gradient(135deg, #FFDC80, #E1306C, #405DE6); color: white; }
+  .modal-close:hover { background: #E8D5C0; color: #3B2517; }
 
-  .hashtag-box {
-    background: white;
-    border-radius: 14px;
-    padding: 1.25rem;
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: #E8D5C0 transparent;
   }
-  .hashtag-label { font-family: var(--font-fun); font-size: 0.9rem; margin-bottom: 0.5rem; }
-  .hashtag-label.req { color: var(--red); }
-  .hashtag-label.opt { color: var(--text-light); margin-top: 0.75rem; }
-  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag {
-    font-family: var(--font-fun);
-    padding: 0.25rem 0.7rem;
-    border-radius: 100px;
-    font-size: 0.85rem;
-  }
-  .tag.req { background: var(--red); color: white; }
-  .tag.opt { background: var(--bg-wood); color: var(--wood-dark); }
+  .modal-body::-webkit-scrollbar { width: 4px; }
+  .modal-body::-webkit-scrollbar-track { background: transparent; }
+  .modal-body::-webkit-scrollbar-thumb { background: #E8D5C0; border-radius: 4px; }
 
-  /* ===== REVIEWS ===== */
-  .reviews-scroll {
+  .modal-category { margin-bottom: 2.5rem; }
+  .modal-category:last-child { margin-bottom: 0; }
+  .modal-category-title {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: #D4874D;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-bottom: 2px solid #E8D5C0;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .modal-menu-item {
     display: flex;
+    justify-content: space-between;
+    align-items: baseline;
     gap: 1rem;
-    overflow-x: auto;
-    padding: 0.5rem 1.25rem 2rem;
-    margin: 0 -1.25rem;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    touch-action: manipulation;
-    scrollbar-width: none;
+    padding: 0.7rem 0;
+    border-bottom: 1px dashed #E8D5C0;
   }
-  .reviews-scroll::-webkit-scrollbar { display: none; }
+  .modal-menu-item:last-child { border-bottom: none; }
+  .modal-item-info { flex: 1; }
+  .modal-item-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .modal-item-desc {
+    font-size: 0.72rem;
+    color: #8C7160;
+    margin-top: 0.15rem;
+    font-family: 'Pretendard', sans-serif;
+  }
+  .modal-item-price {
+    font-weight: 900;
+    font-size: 1rem;
+    color: #a03a30;
+    white-space: nowrap;
+  }
 
-  .review-card {
-    min-width: 280px;
-    max-width: 310px;
+  .modal-footer {
+    padding: 1.25rem 2rem;
+    border-top: 1px solid #E8D5C0;
     flex-shrink: 0;
-    scroll-snap-align: center;
-    background: var(--cream);
-    border-radius: 4px 16px 16px 4px;
-    padding: 1.75rem;
-    position: relative;
-    border-left: 4px solid;
-    box-shadow: 2px 3px 0 rgba(59,37,23,0.05), 0 4px 16px rgba(59,37,23,0.06);
-    transition: all 0.2s;
   }
-  .review-card:hover { transform: translateY(-2px) rotate(-0.3deg); }
-  .review-card.naver { border-left-color: #03C75A; }
-  .review-card.kakao { border-left-color: #FEE500; }
-  .review-card.google { border-left-color: #4285F4; }
-
-  .review-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  .review-platform {
-    font-family: var(--font-fun);
-    font-size: 0.85rem;
-    padding: 0.15rem 0.6rem;
-    border-radius: 8px;
-  }
-  .review-platform.naver { background: #03C75A; color: white; }
-  .review-platform.kakao { background: #FEE500; color: #3C1E1E; }
-  .review-platform.google { background: #4285F4; color: white; }
-  .review-stars { display: flex; gap: 2px; color: var(--gold); }
-  .review-stars svg { width: 14px; height: 14px; fill: var(--gold); }
-
-  .review-quote-mark {
-    font-family: var(--font-hand);
-    font-size: 3rem;
-    color: var(--warm-light);
-    line-height: 0.5;
-    margin-bottom: 0.5rem;
-    user-select: none;
-  }
-  .review-content {
-    font-family: var(--font-body);
-    color: var(--text);
-    font-size: 0.92rem;
-    line-height: 1.7;
-    margin-bottom: 1.25rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .review-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 0.75rem;
-    border-top: 1px dashed var(--bg-wood);
-  }
-  .review-author { font-family: var(--font-fun); font-size: 0.9rem; color: var(--text); }
-  .review-date { font-size: 0.7rem; color: var(--text-light); }
-
-  /* ===== CTA GRID ===== */
-  .cta-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    max-width: 450px;
-    margin: 0 auto;
-  }
-  .cta-card {
-    background: var(--cream);
-    padding: 1.75rem 1.25rem;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-    text-decoration: none;
-    color: var(--text);
-    border: 2px solid var(--bg-wood);
-    transition: all 0.2s;
-  }
-  .cta-card:hover { border-color: var(--warm); transform: translateY(-3px); box-shadow: 0 6px 20px rgba(59,37,23,0.1); }
-  .cta-card:focus-visible { outline: 3px solid rgba(212,135,77,0.4); outline-offset: 2px; }
-  .cta-icon {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-  }
-  .cta-icon.phone { background: var(--red); }
-  .cta-icon.map { background: var(--warm); }
-  .cta-label { font-family: var(--font-fun); font-size: 1.1rem; }
-
-  /* ===== FOOTER ===== */
-  .footer {
-    background: var(--wood-dark);
-    padding: 2.5rem 1.25rem;
-    text-align: center;
-    padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
-    position: relative;
-    overflow: hidden;
-  }
-  .footer::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 6px;
-    background: repeating-linear-gradient(90deg, var(--wood-mid) 0px, var(--wood-mid) 40px, #6B4A35 40px, #6B4A35 80px);
-  }
-  .footer-inner {
-    max-width: var(--container-lg);
-    margin: 0 auto;
-  }
-  .footer-brand {
-    font-family: var(--font-hand);
-    font-size: 1.8rem;
-    color: var(--warm-light);
-    margin-bottom: 0.75rem;
-  }
-  .footer-info {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem 1.25rem;
-    color: rgba(240,200,154,0.5);
-    font-size: 0.78rem;
-    margin-bottom: 1.25rem;
-  }
-  .footer-info a { color: inherit; text-decoration: none; }
-  .footer-info a:hover { color: var(--warm-light); }
-  .footer-copy {
-    font-size: 0.65rem;
-    color: rgba(240,200,154,0.25);
-    letter-spacing: 0.08em;
-    border-top: 1px solid rgba(240,200,154,0.08);
-    padding-top: 1rem;
-  }
-
-  /* ===== FAB ===== */
-  .fab {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    width: 56px; height: 56px;
-    background: var(--warm);
-    color: white;
-    border: 4px solid var(--bg);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 0 #B5723A, 0 8px 24px rgba(212,135,77,0.3);
+  .modal-footer button {
+    width: 100%;
+    background: #3B2517;
+    color: #FBF9F4;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 900;
     cursor: pointer;
-    z-index: 90;
+    font-family: inherit;
     transition: all 0.2s;
   }
-  .fab:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #B5723A, 0 12px 32px rgba(212,135,77,0.35); }
-  .fab:active { transform: translateY(2px); box-shadow: 0 1px 0 #B5723A; }
-  .fab:focus-visible { outline: 3px solid rgba(212,135,77,0.4); outline-offset: 2px; }
-  .fab svg { width: 24px; height: 24px; }
+  .modal-footer button:hover { background: #5C3D2E; }
 
-  /* Steam effect */
-  .steam-container {
-    position: absolute;
-    top: -15px;
-    right: 20px;
-    display: flex;
-    gap: 6px;
-  }
-  .steam {
-    width: 6px; height: 20px;
-    background: var(--text-light);
-    opacity: 0;
-    border-radius: 50%;
-    filter: blur(3px);
-    animation: steam 2s ease-out infinite;
-  }
-  .steam:nth-child(2) { animation-delay: 0.4s; height: 16px; }
-  .steam:nth-child(3) { animation-delay: 0.8s; height: 18px; }
-
-  /* ====================================================
-     RESPONSIVE BREAKPOINTS
-     ==================================================== */
-
-  /* ===== TABLET (768px+) ===== */
-  @media (min-width: 640px) {
-    .menu-grid { grid-template-columns: 1fr 1fr; }
-  }
-
+  /* ===== RESPONSIVE ===== */
   @media (min-width: 768px) {
-    .section-gap {
-      padding: 0 2.5rem;
-      margin-bottom: 5rem;
-    }
+    .hero { padding: 4.5rem 2rem; }
+    .hero-frame { padding: 3rem 2rem; }
+    .hero-title { font-size: 4.5rem; }
 
-    /* Nav */
-    .nav { padding: 1rem 2.5rem; }
-    .nav-hamburger { display: none; }
-    .nav-links { display: flex; }
+    .visual { padding: 3.5rem 3rem; }
+    .visual-image { height: 500px; }
 
-    /* Hero */
-    .hero {
-      padding: 0 2.5rem 4rem;
-      min-height: 90vh;
-    }
-    .hero-card {
-      padding: 3rem 2.5rem;
-      max-width: 520px;
-    }
-    .hero-title { font-size: clamp(3rem, 6vw, 4.5rem); }
-    .hero-title-sub { font-size: 1.2rem; }
-    .hero-desc { font-size: 0.95rem; }
-    .stamp { width: 80px; height: 80px; font-size: 1.05rem; }
+    .reviews { padding: 3.5rem 0; }
+    .reviews-scroll { padding: 0 3rem 2rem; gap: 1.25rem; }
+    .review-card { min-width: 320px; }
 
-    /* Promo */
-    .promo-frame { max-width: 680px; }
-    .promo { padding: 2.5rem 2.25rem; }
-    .promo-menu-name { font-size: 2.6rem; }
-    .promo-caption { font-size: 1.15rem; }
+    .rewards { padding: 4rem 3rem; }
+    .rewards-box { padding: 2.5rem 2.5rem; }
 
-    /* Section heads */
-    .section-head h2 { font-size: 2.6rem; }
-    .section-head p { font-size: 1.1rem; }
+    .menu-section { padding: 4rem 3rem; }
+    .menu-list { max-width: 450px; }
 
-    /* Menu */
-    .menu-grid {
-      max-width: var(--container-md);
-      gap: 1.25rem;
-    }
-    .menu-card { padding: 2rem; }
-    .menu-name { font-size: 1.85rem; }
-    .menu-desc { font-size: 0.88rem; }
-    .full-menu-btn { max-width: var(--container-md); }
+    .site-footer { padding: 3.5rem 2rem; }
 
-    /* Rewards */
-    .rewards-wrapper { max-width: var(--container-md); }
-    .rewards { padding: 2.5rem 2.25rem; }
-    .rewards-title { font-size: 2.2rem; }
-    .mission-item { padding: 1.5rem; }
-
-    /* Reviews — still scrollable but wider cards */
-    .reviews-scroll { padding: 0.5rem 2.5rem 2rem; margin: 0 -2.5rem; }
-    .review-card { min-width: 300px; max-width: 340px; }
-
-    /* CTA */
-    .cta-grid { max-width: 500px; gap: 1.25rem; }
-    .cta-card { padding: 2rem 1.5rem; }
-    .cta-icon { width: 56px; height: 56px; }
-    .cta-label { font-size: 1.2rem; }
-
-    /* Footer */
-    .footer { padding: 3rem 2.5rem; }
-    .footer-brand { font-size: 2rem; }
-    .footer-info { font-size: 0.85rem; gap: 0.75rem 2rem; }
+    .modal { max-width: 540px; }
   }
 
-  /* ===== DESKTOP (1024px+) ===== */
   @media (min-width: 1024px) {
-    .section-gap {
-      padding: 0 3rem;
-      margin-bottom: 6rem;
-    }
+    .hero-frame { max-width: 560px; }
 
-    /* Nav */
-    .nav { padding: 1rem 3rem; }
-    .nav-brand { font-size: 2rem; }
-    .nav-cta { padding: 0.65rem 1.6rem; font-size: 1.05rem; }
+    .visual { max-width: 800px; }
 
-    /* Hero — side layout with card on left, image fills right */
-    .hero {
-      padding: 0 3rem 5rem;
-      min-height: 85vh;
-      justify-content: center;
-      align-items: flex-start;
-    }
-    .hero-card {
-      max-width: 560px;
-      padding: 3.5rem 3rem;
-    }
-    .hero-title { font-size: 4.2rem; }
-    .hero-title-sub { font-size: 1.3rem; }
-    .hero-desc { font-size: 1rem; line-height: 1.8; }
-    .stamp { width: 88px; height: 88px; font-size: 1.1rem; top: -16px; right: 28px; }
-
-    /* Promo */
-    .promo-frame { max-width: 720px; }
-    .promo { padding: 3rem 2.75rem; }
-    .promo-menu-name { font-size: 3rem; }
-    .promo-caption { font-size: 1.2rem; }
-
-    /* Section heads */
-    .section-head { margin-bottom: 2.5rem; }
-    .section-head h2 { font-size: 2.8rem; }
-    .section-head p { font-size: 1.15rem; }
-
-    /* Menu — 3 columns or 2 wider */
-    .menu-grid {
-      max-width: var(--container-lg);
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-    }
-    .menu-card { padding: 2.25rem; }
-    .menu-name { font-size: 2rem; }
-    .menu-desc { font-size: 0.92rem; }
-    .full-menu-btn { max-width: var(--container-lg); font-size: 1.25rem; padding: 1.25rem; }
-
-    /* Rewards — wider with horizontal mission layout */
-    .rewards-wrapper { max-width: 780px; }
-    .rewards { padding: 3rem 2.75rem; }
-    .rewards-title { font-size: 2.4rem; }
-    .rewards-gift { padding: 2rem; }
-    .rewards-gift-text { font-size: 2rem; }
-    .mission-list { flex-direction: row; gap: 1.25rem; }
-    .mission-item { flex: 1; flex-direction: column; text-align: center; border-left: none; border-top: 4px solid var(--warm); }
-    .mission-num { margin: 0 auto; }
-    .mission-links { justify-content: center; }
-
-    /* Reviews — grid instead of scroll on desktop */
     .reviews-scroll {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       overflow-x: visible;
-      padding: 0.5rem 0 2rem;
-      margin: 0;
-      max-width: var(--container-lg);
-      margin-left: auto;
-      margin-right: auto;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 2rem;
     }
-    .review-card {
-      min-width: unset;
-      max-width: unset;
-      scroll-snap-align: unset;
-    }
+    .review-card { min-width: unset; }
 
-    /* CTA — horizontal with extra info */
-    .cta-grid {
-      max-width: 600px;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-    .cta-card {
-      flex-direction: row;
-      padding: 1.75rem 2rem;
-      gap: 1rem;
-    }
-    .cta-icon { width: 56px; height: 56px; flex-shrink: 0; }
-    .cta-label { font-size: 1.2rem; }
+    .rewards-box { max-width: 520px; }
 
-    /* Footer — horizontal layout */
-    .footer { padding: 3.5rem 3rem; text-align: left; }
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .footer-brand { margin-bottom: 0; }
-    .footer-info { margin-bottom: 0; }
-    .footer-copy {
-      width: 100%;
-      text-align: center;
-      margin-top: 1rem;
-    }
-
-    /* FAB bigger on desktop */
-    .fab { width: 64px; height: 64px; bottom: 2rem; right: 2rem; }
-    .fab svg { width: 28px; height: 28px; }
+    .menu-list { max-width: 500px; }
+    .menu-row-name { font-size: 1.3rem; }
+    .menu-row-price { font-size: 1.3rem; }
   }
 
-  /* ===== LARGE DESKTOP (1440px+) ===== */
-  @media (min-width: 1440px) {
-    .section-gap {
-      padding: 0 4rem;
-      margin-bottom: 7rem;
-    }
-    .nav { padding: 1.1rem 4rem; }
-
-    .hero { padding: 0 4rem 6rem; }
-    .hero-card {
-      max-width: 620px;
-      padding: 4rem 3.5rem;
-    }
-    .hero-title { font-size: 4.8rem; }
-
-    .promo-frame { max-width: 800px; }
-
-    .menu-grid { gap: 2rem; }
-    .menu-card { padding: 2.5rem; }
-
-    .reviews-scroll { gap: 2rem; }
-    .review-card { padding: 2rem; }
-    .review-content { font-size: 0.95rem; }
-  }
-
-  /* ===== SMALL MOBILE (< 375px) ===== */
   @media (max-width: 374px) {
-    .section-gap { padding: 0 0.75rem; }
-    .nav { padding: 0.75rem; }
-    .nav-brand { font-size: 1.5rem; }
-    .nav-cta { padding: 0.45rem 0.9rem; font-size: 0.9rem; }
+    .hero { padding: 2.5rem 1.25rem; }
+    .hero-frame { padding: 1.75rem 0.75rem; }
+    .hero-title { font-size: 2.5rem; }
 
-    .hero { padding: 0 0.75rem 2rem; }
-    .hero-card { padding: 2rem 1.5rem; }
-    .hero-title { font-size: 2.4rem; }
+    .visual { padding: 2rem 1.25rem; }
+    .visual-image { height: 280px; }
 
-    .promo { padding: 1.5rem 1.25rem; }
-    .promo-menu-name { font-size: 1.8rem; }
-    .promo-caption { font-size: 0.95rem; }
+    .reviews { padding: 2rem 0; }
 
-    .section-head h2 { font-size: 1.8rem; }
-    .menu-card { padding: 1.5rem; }
-    .menu-name { font-size: 1.5rem; }
+    .rewards { padding: 2.5rem 1.25rem; }
+    .rewards-box { padding: 1.75rem 1.25rem; }
 
-    .rewards { padding: 1.5rem 1.25rem; }
-    .rewards-title { font-size: 1.7rem; }
-    .rewards-gift-text { font-size: 1.5rem; }
+    .menu-section { padding: 2.5rem 1.25rem; }
+    .menu-section-title { font-size: 1.8rem; margin-bottom: 1.75rem; }
+    .menu-list { gap: 1.25rem; margin-bottom: 2rem; }
 
-    .stamp { width: 60px; height: 60px; font-size: 0.8rem; }
+    .site-footer { padding: 2.5rem 1.25rem; }
 
-    .cta-grid { gap: 0.75rem; }
-    .cta-card { padding: 1.25rem 1rem; }
-    .cta-icon { width: 40px; height: 40px; }
-    .cta-label { font-size: 1rem; }
-
-    .fab { width: 48px; height: 48px; bottom: 1rem; right: 1rem; }
-    .fab svg { width: 20px; height: 20px; }
+    .modal-body { padding: 1.5rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1092,282 +591,331 @@
 </head>
 <body>
 
-<div class="relative">
-
-<!-- Navigation -->
-<nav class="nav">
-  <div class="nav-inner">
-    <span class="nav-brand">한마음식당</span>
-    <ul class="nav-links">
-      <li><a href="#menu">대표 메뉴</a></li>
-      <li><a href="#promo">오늘의 추천</a></li>
-      <li><a href="#rewards">리뷰 혜택</a></li>
-      <li><a href="#reviews">후기</a></li>
-    </ul>
-    <div class="nav-right">
-      <button class="nav-cta" onclick="location.href='tel:02-802-0901'">전화예약</button>
-      <button class="nav-hamburger" onclick="document.querySelector('.mobile-menu').classList.add('active')" aria-label="메뉴 열기">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </div>
-</nav>
-
-<!-- Mobile Menu Overlay -->
-<div class="mobile-menu">
-  <button class="mobile-menu-close" onclick="this.parentElement.classList.remove('active')" aria-label="메뉴 닫기">&times;</button>
-  <a href="#menu" onclick="this.parentElement.classList.remove('active')">대표 메뉴</a>
-  <a href="#promo" onclick="this.parentElement.classList.remove('active')">오늘의 추천</a>
-  <a href="#rewards" onclick="this.parentElement.classList.remove('active')">리뷰 혜택</a>
-  <a href="#reviews" onclick="this.parentElement.classList.remove('active')">후기</a>
-  <a href="tel:02-802-0901" onclick="this.parentElement.classList.remove('active')">전화 문의</a>
-</div>
-
-<!-- Hero -->
+<!-- 1. Hero -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-content">
-    <div class="hero-card">
-      <div class="stamp">13년<br>전통</div>
-      <p class="hero-label">독산동 따뜻한 집밥</p>
-      <h1 class="hero-title">한마음식당</h1>
-      <p class="hero-title-sub">매일 정성껏 차리는 우리 동네 밥상</p>
-      <p class="hero-desc">단골들이 극찬하는 불향 가득한 제육볶음과 매콤달콤한 오삼불고기. 신선한 반찬과 함께 집밥의 따뜻한 위로를 느껴보세요.</p>
-    </div>
+  <div class="hero-frame">
+    <div class="hero-since">SINCE 1990</div>
+    <h1 class="hero-title">한마음<br>식당</h1>
+    <div class="hero-divider"></div>
+    <p class="hero-tagline">"낡은 문 너머, 일품의 맛"</p>
   </div>
 </section>
 
-<!-- Today's Promo — 칠판 -->
-<section id="promo" class="section-gap" style="margin-top:-1rem;">
-  <div class="promo-frame">
-    <div class="promo">
-      <span class="chalk-star" style="top:12px;right:16px;">&#10022;</span>
-      <span class="chalk-star" style="bottom:16px;left:20px;">~</span>
-      <div class="promo-header">
-        <p class="promo-today">&#10022; TODAY'S SPECIAL &#10022;</p>
-        <h3 class="promo-menu-name">오삼불고기</h3>
-      </div>
-      <div class="promo-divider"></div>
-      <p class="promo-caption">"오징어와 삼겹살의 완벽한 조화,<br>불향 가득한 매콤달콤 소스가<br>밥 두 공기 뚝딱!"</p>
-      <div class="promo-bottom">
-        <span class="promo-date-label">오늘 업로드됨</span>
-        <a href="#" class="promo-insta-link">인스타에서 보기 &rarr;</a>
-      </div>
-    </div>
+<!-- 2. Visual: 30년 진심 -->
+<section class="visual">
+  <div class="visual-image-wrap">
+    <div class="visual-image"></div>
+    <div class="visual-badge">30年 眞心</div>
+  </div>
+  <div class="visual-text">
+    <h4>허름함 뒤의 정갈함</h4>
+    <p>건물은 낡았지만, 매일 아침 사장님이 직접 닦아 윤이 나는 식탁. 그 고집스러운 청결함이 맛의 기본입니다.</p>
   </div>
 </section>
 
-<!-- Signature Menus -->
-<section id="menu" class="section-gap">
-  <div class="section-head">
-    <h2>대표 메뉴</h2>
-    <p>한마음식당이 자신있게 추천합니다</p>
+<!-- 3. Latest Reviews -->
+<section class="reviews">
+  <div class="reviews-header">
+    <span class="reviews-label">LATEST REVIEWS</span>
+    <h3 class="reviews-title">63명이 인정한 맛</h3>
   </div>
-
-  <div class="menu-grid">
-    <div class="menu-card">
-      <div class="steam-container">
-        <div class="steam"></div>
-        <div class="steam"></div>
-        <div class="steam"></div>
-      </div>
-      <h3 class="menu-name">오삼불고기</h3>
-      <p class="menu-desc">매콤달콤한 소스와 불향의 완벽한 조화. 오징어와 삼겹살이 어우러진 밥도둑.</p>
-      <span class="menu-price">13,000원</span>
-    </div>
-    <div class="menu-card">
-      <div class="steam-container">
-        <div class="steam"></div>
-        <div class="steam"></div>
-        <div class="steam"></div>
-      </div>
-      <h3 class="menu-name">제육볶음</h3>
-      <p class="menu-desc">단골들이 보증하는 밥도둑 정석. 부드러운 고기와 진한 감칠맛.</p>
-      <span class="menu-price">12,000원</span>
-    </div>
-  </div>
-
-  <button class="full-menu-btn">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-    전체 메뉴 보기
-  </button>
-</section>
-
-<!-- Rewards — 쿠폰 -->
-<section id="rewards" class="section-gap">
-  <div class="section-head">
-    <h2>리뷰 참여 혜택</h2>
-    <p>소중한 리뷰를 남겨주세요!</p>
-  </div>
-
-  <div class="rewards-wrapper">
-    <div class="rewards">
-      <div class="rewards-gift">
-        <p class="rewards-gift-text">음료수 한 잔 서비스!</p>
-        <p class="rewards-gift-desc">사진 리뷰 or 인스타 포스팅 시</p>
-      </div>
-
-      <div class="mission-list">
-        <div class="mission-item">
-          <div class="mission-num">1</div>
-          <div class="mission-body">
-            <p class="mission-text">네이버/카카오 방문자 사진 리뷰 작성</p>
-            <div class="mission-links">
-              <a href="#" class="m-link naver">네이버 &rsaquo;</a>
-              <a href="#" class="m-link kakao">카카오 &rsaquo;</a>
-            </div>
-          </div>
-        </div>
-        <div class="mission-item">
-          <div class="mission-num">2</div>
-          <div class="mission-body">
-            <p class="mission-text">인스타그램 필수 해시태그 포함 포스팅</p>
-            <div class="mission-links">
-              <a href="#" class="m-link insta">인스타그램 &rsaquo;</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hashtag-box">
-        <p class="hashtag-label req">필수 해시태그</p>
-        <div class="tag-list">
-          <span class="tag req">#한마음식당</span>
-          <span class="tag req">#독산동맛집</span>
-          <span class="tag req">#한마음식당리뷰</span>
-        </div>
-        <p class="hashtag-label opt">추천 해시태그</p>
-        <div class="tag-list">
-          <span class="tag opt">#독산동백반</span>
-          <span class="tag opt">#금천구맛집</span>
-          <span class="tag opt">#점심추천</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Reviews -->
-<section id="reviews" class="section-gap">
-  <div class="section-head">
-    <h2>생생한 방문 후기</h2>
-    <p>실제 손님들의 따뜻한 리뷰</p>
-  </div>
-
   <div class="reviews-scroll">
-    <div class="review-card kakao">
+    <div class="review-card">
       <div class="review-top">
-        <span class="review-platform kakao">Kakao</span>
-        <div class="review-stars">
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
+        <span class="review-platform naver">NAVER</span>
+        <span class="review-stars">★★★★★</span>
       </div>
-      <div class="review-quote-mark">&ldquo;</div>
-      <p class="review-content">여기 오삼불고기 정말 예술입니다. 매콤달콤한 소스가 밥 두 공기 뚝딱이에요!</p>
-      <div class="review-bottom">
-        <span class="review-author">단골손님</span>
-        <span class="review-date">2024.03.11</span>
-      </div>
+      <p class="review-text">"음식이 정말 맛있고 양이 푸짐해요. 사장님 인심이 대단하십니다!"</p>
+      <div class="review-author">— 김**님</div>
     </div>
-
-    <div class="review-card naver">
+    <div class="review-card">
       <div class="review-top">
-        <span class="review-platform naver">Naver</span>
-        <div class="review-stars">
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
+        <span class="review-platform kakao">KAKAO</span>
+        <span class="review-stars">★★★★★</span>
       </div>
-      <div class="review-quote-mark">&ldquo;</div>
-      <p class="review-content">밑반찬이 정갈하고 사장님이 너무 친절하세요. 집밥 생각날 때 무조건 옵니다.</p>
-      <div class="review-bottom">
-        <span class="review-author">동네주민</span>
-        <span class="review-date">2024.03.10</span>
-      </div>
+      <p class="review-text">"오삼불고기 정말 예술입니다. 매콤달콤한 소스가 밥 두 공기 뚝딱이에요!"</p>
+      <div class="review-author">— 단골손님</div>
     </div>
-
-    <div class="review-card google">
+    <div class="review-card">
       <div class="review-top">
-        <span class="review-platform google">Google</span>
-        <div class="review-stars">
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
+        <span class="review-platform google">GOOGLE</span>
+        <span class="review-stars">★★★★★</span>
       </div>
-      <div class="review-quote-mark">&ldquo;</div>
-      <p class="review-content">제육볶음 불향이 살아있네요. 청결한 매장 분위기도 마음에 듭니다.</p>
-      <div class="review-bottom">
-        <span class="review-author">미식가</span>
-        <span class="review-date">2024.03.09</span>
-      </div>
+      <p class="review-text">"제육볶음 불향이 살아있네요. 청결한 매장 분위기도 마음에 듭니다."</p>
+      <div class="review-author">— 미식가</div>
     </div>
+  </div>
+  <div class="reviews-more">
+    <button>새로운 리뷰 보기 ↻</button>
+  </div>
+</section>
 
-    <div class="review-card naver">
-      <div class="review-top">
-        <span class="review-platform naver">Naver</span>
-        <div class="review-stars">
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
+<!-- 4. Rewards -->
+<section class="rewards">
+  <div class="rewards-header">
+    <span class="rewards-label">[ MASTER'S GIFT ]</span>
+    <h3 class="rewards-title">사장님의 감사</h3>
+  </div>
+  <div class="rewards-box">
+    <p class="rewards-gift">사진 리뷰 작성 시 <br><span class="rewards-gift-highlight">시원한 음료수 1병</span>을 드립니다.</p>
+    <div class="rewards-links">
+      <a href="https://map.naver.com/p/search/%ED%95%9C%EB%A7%88%EC%9D%8C%20%EC%8B%9D%EB%8B%B9/place/86727483?placePath=/review" target="_blank" rel="noopener" class="rewards-link naver">네이버 리뷰 작성 ↗</a>
+      <a href="https://place.map.kakao.com/20641502#review" target="_blank" rel="noopener" class="rewards-link kakao">카카오 리뷰 작성 ↗</a>
+      <a href="https://www.instagram.com/hanbap_doksan/" target="_blank" rel="noopener" class="rewards-link insta">인스타그램 인증 ↗</a>
+    </div>
+    <div class="rewards-hashtags">
+      <div class="hashtag-group">
+        <span class="hashtag-label required"># 필수 해시태그</span>
+        <p class="hashtag-tags required">#한마음식당 #독산동맛집 #한마음식당리뷰</p>
       </div>
-      <div class="review-quote-mark">&ldquo;</div>
-      <p class="review-content">점심 특선 가성비 최고예요. 반찬이 매일 바뀌어서 질리지 않네요.</p>
-      <div class="review-bottom">
-        <span class="review-author">든든하게한끼</span>
-        <span class="review-date">2024.03.08</span>
+      <div class="hashtag-group">
+        <span class="hashtag-label optional"># 추천 해시태그</span>
+        <p class="hashtag-tags optional">#독산동백반 #금천구맛집 #점심추천 #동네맛집</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="section-gap">
-  <div class="cta-grid">
-    <a href="tel:02-802-0901" class="cta-card">
-      <div class="cta-icon phone">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+<!-- 5. Menu: 한마음 차림표 -->
+<section class="menu-section">
+  <h3 class="menu-section-title">한마음 차림표</h3>
+  <div class="menu-list">
+    <div class="menu-row">
+      <div>
+        <span class="menu-row-name">오삼불고기</span>
+        <div class="menu-row-desc">오징어와 삼겹살의 완벽한 조화</div>
       </div>
-      <span class="cta-label">전화 문의</span>
-    </a>
-    <a href="#" class="cta-card">
-      <div class="cta-icon map">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span class="menu-row-price">13,000</span>
+    </div>
+    <div class="menu-row">
+      <div>
+        <span class="menu-row-name">제육볶음</span>
+        <div class="menu-row-desc">부드러운 고기와 진한 감칠맛</div>
       </div>
-      <span class="cta-label">오시는 길</span>
-    </a>
+      <span class="menu-row-price">12,000</span>
+    </div>
+    <div class="menu-row">
+      <div>
+        <span class="menu-row-name">해물순두부</span>
+        <div class="menu-row-desc">신선한 해물이 듬뿍 들어간 얼큰함</div>
+      </div>
+      <span class="menu-row-price">11,000</span>
+    </div>
+    <div class="menu-row">
+      <div>
+        <span class="menu-row-name">김치찌개</span>
+        <div class="menu-row-desc">진하게 우려낸 묵은지의 여운</div>
+      </div>
+      <span class="menu-row-price">9,000</span>
+    </div>
   </div>
+  <button class="menu-full-btn" onclick="document.getElementById('menuModal').classList.add('active')">전체 메뉴판 보기</button>
 </section>
 
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-brand">한마음식당</div>
-    <div class="footer-info">
-      <span>서울 금천구 시흥대로88길 3</span>
-      <a href="tel:02-802-0901">02-802-0901</a>
-    </div>
-    <p class="footer-copy">&copy; 2026 Hanmaeum Restaurant. All rights reserved.</p>
+<!-- 6. Footer -->
+<footer class="site-footer">
+  <h2 class="footer-title">한마음식당</h2>
+  <div class="footer-info">
+    서울 금천구 시흥대로88길 3<br>
+    02-802-0901<br>
+    매일 11:00 - 22:00 (브레이크타임 15:00 - 17:00)
+  </div>
+  <div class="footer-buttons">
+    <a href="tel:02-802-0901" class="footer-cta">지금 전화 문의하기</a>
+    <a href="https://map.kakao.com/link/search/서울%20금천구%20시흥대로88길%203" target="_blank" rel="noopener" class="footer-cta outline">오시는 길 →</a>
   </div>
 </footer>
 
-<!-- FAB -->
-<button class="fab" aria-label="상담 채널 문의">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-</button>
+<!-- Full Menu Modal -->
+<div id="menuModal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('menuModal').classList.remove('active')" aria-label="닫기">&times;</button>
+      <h2 id="modal-title">전체 메뉴</h2>
+      <p>다양하고 정갈한 메뉴를 확인해보세요</p>
+    </div>
+    <div class="modal-body">
 
+      <div class="modal-category">
+        <h3 class="modal-category-title">식사류</h3>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">오삼불고기</div>
+            <div class="modal-item-desc">오징어와 삼겹살의 완벽한 조화 (원양/국내)</div>
+          </div>
+          <span class="modal-item-price">₩13,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">오징어볶음</div>
+            <div class="modal-item-desc">매콤달콤 쫄깃한 식감이 일품 (원양산)</div>
+          </div>
+          <span class="modal-item-price">₩12,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">낙지볶음</div>
+            <div class="modal-item-desc">입맛 돋우는 화끈한 불향 (중국산)</div>
+          </div>
+          <span class="modal-item-price">₩12,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">제육볶음</div>
+            <div class="modal-item-desc">부드러운 고기와 진한 감칠맛 (독일산)</div>
+          </div>
+          <span class="modal-item-price">₩12,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">뚝배기불고기</div>
+            <div class="modal-item-desc">달큰한 국물과 야들야들한 불고기 (호주산)</div>
+          </div>
+          <span class="modal-item-price">₩12,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">해물순두부</div>
+            <div class="modal-item-desc">신선한 해물이 듬뿍 들어간 얼큰함 (국내산)</div>
+          </div>
+          <span class="modal-item-price">₩11,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">청국장</div>
+            <div class="modal-item-desc">구수하고 깊은 고향 어머니의 맛 (국내산)</div>
+          </div>
+          <span class="modal-item-price">₩10,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">김치찌개</div>
+            <div class="modal-item-desc">진하게 우려낸 묵은지의 여운 (국내산)</div>
+          </div>
+          <span class="modal-item-price">₩9,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">된장찌개</div>
+            <div class="modal-item-desc">재료가 푸짐한 정통 시골 된장 (국내산)</div>
+          </div>
+          <span class="modal-item-price">₩9,000</span>
+        </div>
+      </div>
+
+      <div class="modal-category">
+        <h3 class="modal-category-title">추가 메뉴</h3>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">동태탕 (3인분 이상)</div>
+            <div class="modal-item-desc">속이 확 풀리는 얼큰하고 시원한 국물 (러시아산)</div>
+          </div>
+          <span class="modal-item-price">₩13,000</span>
+        </div>
+      </div>
+
+      <div class="modal-category">
+        <h3 class="modal-category-title">예약 메뉴 / 안주류 (2시간 전)</h3>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">일반닭볶음탕</div>
+            <div class="modal-item-desc">매콤달콤 특제 양념이 속까지 밴 밥도둑 (국내산)</div>
+          </div>
+          <span class="modal-item-price">₩55,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">낙지볶음</div>
+            <div class="modal-item-desc">입맛 돋우는 화끈한 불향 (중국산)</div>
+          </div>
+          <span class="modal-item-price">₩35,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">오징어볶음</div>
+            <div class="modal-item-desc">매콤달콤 쫄깃한 식감이 일품 (원양산)</div>
+          </div>
+          <span class="modal-item-price">₩35,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">제육볶음</div>
+            <div class="modal-item-desc">부드러운 고기와 진한 감칠맛 (독일산)</div>
+          </div>
+          <span class="modal-item-price">₩35,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">두부김치</div>
+            <div class="modal-item-desc">매콤고소한 환상의 짝꿍 (국내산)</div>
+          </div>
+          <span class="modal-item-price">₩35,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">해물순두부</div>
+            <div class="modal-item-desc">신선한 해물이 듬뿍 들어간 얼큰함 (국내산)</div>
+          </div>
+          <span class="modal-item-price">₩35,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">계란말이</div>
+            <div class="modal-item-desc">부드러운 담백함으로 입안을 감싸주는 서포터 (국내산)</div>
+          </div>
+          <span class="modal-item-price">₩13,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">옻오리백숙</div>
+            <div class="modal-item-desc">몸을 든든하게 채워주는 깊은 보양의 진국</div>
+          </div>
+          <span class="modal-item-price">₩75,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">옻토종백숙</div>
+            <div class="modal-item-desc">기력 회복에 으뜸인 프리미엄 토종 백숙</div>
+          </div>
+          <span class="modal-item-price">₩60,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">오리로스</div>
+            <div class="modal-item-desc">담백하고 고소하게 구워 먹는 신선 오리고기</div>
+          </div>
+          <span class="modal-item-price">₩55,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">옻닭백숙</div>
+            <div class="modal-item-desc">진하게 우러난 옻 국물과 부드러운 닭고기</div>
+          </div>
+          <span class="modal-item-price">₩55,000</span>
+        </div>
+        <div class="modal-menu-item">
+          <div class="modal-item-info">
+            <div class="modal-item-name">삼겹살 (1인분/200g)</div>
+            <div class="modal-item-desc">육즙이 살아있는 두툼하고 신선한 생삼겹살</div>
+          </div>
+          <span class="modal-item-price">₩18,000</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button onclick="document.getElementById('menuModal').classList.remove('active')">돌아가기</button>
+    </div>
+  </div>
 </div>
+
+<script>
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('menuModal').classList.remove('active');
+  }
+});
+</script>
+
 </body>
 </html>
