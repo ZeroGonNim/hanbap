@@ -72,7 +72,10 @@ export class ReviewCollector {
                 }));
             });
 
-            return reviews.map(r => ({
+            const filtered = reviews.filter(r => r.content.trim() !== '');
+            console.log(`[Naver] 수집 ${reviews.length}건 중 내용 있는 리뷰: ${filtered.length}건 (빈 리뷰 ${reviews.length - filtered.length}건 제외)`);
+
+            return filtered.map(r => ({
                 ...r,
                 platform: 'naver' as const,
                 rating: 5,
@@ -120,7 +123,10 @@ export class ReviewCollector {
                 });
             });
 
-            return reviews.map(r => ({
+            const filtered = reviews.filter(r => r.content.trim() !== '');
+            console.log(`[Kakao] 수집 ${reviews.length}건 중 내용 있는 리뷰: ${filtered.length}건 (빈 리뷰 ${reviews.length - filtered.length}건 제외)`);
+
+            return filtered.map(r => ({
                 ...r,
                 platform: 'kakao' as const,
                 keywords: this.filterDomainKeywords(r.content)
@@ -166,7 +172,10 @@ export class ReviewCollector {
                 });
             });
 
-            return blogs.map(b => ({
+            const filtered = blogs.filter(b => b.content.trim() !== '' && b.content !== '[블로그 제목: ]\n');
+            console.log(`[Blog] 수집 ${blogs.length}건 중 내용 있는 글: ${filtered.length}건`);
+
+            return filtered.map(b => ({
                 ...b,
                 platform: 'blog' as const,
                 keywords: this.filterDomainKeywords(b.content)
@@ -214,7 +223,10 @@ export class ReviewCollector {
                 });
             });
 
-            return reviews.map(r => ({
+            const filtered = reviews.filter(r => r.content.trim() !== '');
+            console.log(`[Google] 수집 ${reviews.length}건 중 내용 있는 리뷰: ${filtered.length}건 (빈 리뷰 ${reviews.length - filtered.length}건 제외)`);
+
+            return filtered.map(r => ({
                 ...r,
                 platform: 'google' as const,
                 keywords: this.filterDomainKeywords(r.content)

@@ -1,9 +1,12 @@
 import 'dotenv/config';
+import fs from 'fs';
+import path from 'path';
 import { ReviewCollector } from './collector.js';
 import { analyzeReviews } from './analyzer.js';
 import KakaoBridge from './kakao_bridge.js';
 import Reporter from './reporter.js';
 import { sendTelegram } from './telegram.js';
+import { type Review } from './types.js';
 
 async function runAutomationPipeline() {
     const collector = new ReviewCollector();
@@ -22,9 +25,12 @@ async function runAutomationPipeline() {
             collector.collectGoogleReviews('ChIJN1t-zd6veDURSOf_p0bqXDo') // 한마음 식당 Google Place ID 예시
         ]);
 
-        const combined = [...naverReviews, ...naverBlogs, ...kakao, ...google];
+        const rawCombined = [...naverReviews, ...naverBlogs, ...kakao, ...google];
         console.log(`> 수집 현황: 네이버(${naverReviews.length}), 블로그(${naverBlogs.length}), 카카오(${kakao.length}), 구글(${google.length})`);
-        console.log(`> 총 ${combined.length}건의 신규 데이터 발견`);
+
+        // 이전 리포트 대비 중복 제거
+        const combined = deduplicateReviews(rawCombined);
+        console.log(`> 총 ${rawCombined.length}건 수집 → 중복 제거 후 ${combined.length}건 (${rawCombined.length - combined.length}건 중복 제외)`);
 
         // 2. GPT 분석 및 마케팅 문구 생성
         console.log('STEP 2: GPT 통합 분석 및 문구 도출 중...');
@@ -75,11 +81,13 @@ async function runAutomationPipeline() {
         console.log(`> 저장된 리포트: ${summaryPath}`);
         console.log(`> 랜딩페이지 자동 반영 완료: frontend/src/data/reviews.json`);
 
+        const dupCount = rawCombined.length - combined.length;
         await sendTelegram(
             `📊 [일일 리포트] ${dateStr}\n\n` +
-            `신규 리뷰 ${combined.length}건 수집 완료\n` +
+            `수집 ${rawCombined.length}건 → 신규 ${combined.length}건` +
+            (dupCount > 0 ? ` (중복 ${dupCount}건 제외)` : '') + `\n` +
             `네이버 ${naverReviews.length + naverBlogs.length} / 카카오 ${kakao.length} / 구글 ${google.length}\n\n` +
-            `랜딩페이지 자동 업데이트 완료`
+            (combined.length > 0 ? `랜딩페이지 자동 업데이트 완료` : `신규 리뷰 없음 — 업데이트 생략`)
         );
 
     } catch (error) {
@@ -87,6 +95,46 @@ async function runAutomationPipeline() {
         console.error(error);
         await sendTelegram(`❌ [파이프라인 오류] ${error}`);
     }
+}
+
+/**
+ * 이전 리포트에 이미 수집된 리뷰를 제거하고, 같은 배치 내 중복도 제거
+ */
+function deduplicateReviews(reviews: Review[]): Review[] {
+    const previousKeys = loadPreviousReviewKeys();
+
+    const seen = new Set<string>(previousKeys);
+    return reviews.filter(r => {
+        const key = `${r.platform}|${r.author}|${r.content.slice(0, 80)}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+}
+
+function loadPreviousReviewKeys(): Set<string> {
+    const keys = new Set<string>();
+    const reportsDir = path.resolve('reports');
+
+    if (!fs.existsSync(reportsDir)) return keys;
+
+    const files = fs.readdirSync(reportsDir)
+        .filter(f => f.startsWith('report_') && f.endsWith('.json'))
+        .sort()
+        .slice(-7); // 최근 7일치만 확인
+
+    for (const file of files) {
+        try {
+            const data = JSON.parse(fs.readFileSync(path.join(reportsDir, file), 'utf-8'));
+            if (data.raw_data && Array.isArray(data.raw_data)) {
+                for (const r of data.raw_data) {
+                    keys.add(`${r.platform}|${r.author}|${(r.content || '').slice(0, 80)}`);
+                }
+            }
+        } catch { /* skip corrupted files */ }
+    }
+
+    return keys;
 }
 
 runAutomationPipeline().catch(console.error);

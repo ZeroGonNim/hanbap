@@ -88,44 +88,61 @@ async function searchDriveForItem(itemName) {
 }
 
 /**
- * 나노바나나2 (Gemini 3.1)를 이용해 AI 이미지를 생성합니다.
+ * 나노바나나2 (Gemini 3.1)를 이용해 AI 이미지를 생성하고 로컬 파일로 저장합니다.
+ * GitHub Actions에서 push 후 raw URL을 사용합니다.
  */
+const AI_IMAGE_DIR = path.resolve(__dirname, '../../frontend/public/images/ai-generated');
+const GITHUB_REPO = 'ZeroGonNim/hanbap';
+const GITHUB_BRANCH = 'main';
+
 async function generateImageWithGemini(itemName) {
     if (!GEMINI_API_KEY) return null;
-    
+
     console.log(`🎨 Generating AI image for: ${itemName} (using Nano Banana 2)`);
     const MODEL_NAME = "gemini-3.1-flash-image-preview";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
-    
-    // 사용자가 요청한 '삼겹살 게시물'의 무드를 반영한 고도화된 프롬프트
-    const prompt = `Authentic, high-quality smartphone photo of Korean ${itemName} in a cozy local restaurant. 
-    Captured from a high-angle shot (60 degrees) on a light-colored wooden table with a visible grain. 
-    The ${itemName} is the centerpiece, surrounded by a variety of colorful Korean side dishes (banchan) in small white ceramic and stainless steel bowls. 
-    Bright even indoor lighting with a subtle warm yellowish tint, looking professional yet homey and inviting. 
-    The food looks fresh and ready to eat, with a realistic and 'just-served' atmosphere. 
+
+    const prompt = `Authentic, high-quality smartphone photo of Korean ${itemName} in a cozy local restaurant.
+    Captured from a high-angle shot (60 degrees) on a light-colored wooden table with a visible grain.
+    The ${itemName} is the centerpiece, surrounded by a variety of colorful Korean side dishes (banchan) in small white ceramic and stainless steel bowls.
+    Bright even indoor lighting with a subtle warm yellowish tint, looking professional yet homey and inviting.
+    The food looks fresh and ready to eat, with a realistic and 'just-served' atmosphere.
     High resolution, delicious look, authentic Korean local restaurant vibe.`;
-    
+
     try {
         const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { responseModalities: ["TEXT", "IMAGE"] }
             })
         });
-        
+
         const data = await res.json();
-        if (data.candidates && data.candidates[0].content.parts) {
+        if (data.candidates && data.candidates[0]?.content?.parts) {
             const imagePart = data.candidates[0].content.parts.find(p => p.inlineData);
             if (imagePart) {
-                console.log("✅ AI Image generated successfully!");
-                // 실제 서비스 시에는 생성된 base64를 이미지 서버(Imgur 등)에 올려 URL을 반환해야 함
-                // 여기서는 로직 구조만 보여주며, 실패 시 테스트 이미지를 반환하도록 함
-                return null; 
+                // base64 이미지를 파일로 저장
+                const timestamp = new Date().toISOString().split('T')[0];
+                const safeName = itemName.replace(/\s/g, '_');
+                const filename = `${timestamp}_${safeName}.png`;
+
+                if (!fs.existsSync(AI_IMAGE_DIR)) {
+                    fs.mkdirSync(AI_IMAGE_DIR, { recursive: true });
+                }
+
+                const filePath = path.join(AI_IMAGE_DIR, filename);
+                fs.writeFileSync(filePath, Buffer.from(imagePart.inlineData.data, 'base64'));
+                console.log(`✅ AI Image saved: ${filePath}`);
+
+                // GitHub raw URL 반환 (push 후 접근 가능)
+                const rawUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/frontend/public/images/ai-generated/${filename}`;
+                return { url: rawUrl, filePath, filename };
             }
         }
-        if (data.error && data.error.code === 429) {
-            console.warn("⚠️ AI Generation Quota Exceeded (Limit: 0). Please enable billing.");
+        if (data.error) {
+            console.warn(`⚠️ AI Generation failed: ${data.error.message} (code: ${data.error.code})`);
         }
     } catch (err) {
         console.warn(`⚠️ AI generation failed: ${err.message}`);
@@ -183,6 +200,24 @@ function generateReviewCaption(review) {
     message += "더욱 정성스러운 맛과 서비스로 보답하겠습니다! 🙇‍♂️\n\n";
     message += `📍 위치: 금천구 시흥대로88길 3\n📞 예약문의: 02-802-0901\n\n${tags}`;
     return message;
+}
+
+/**
+ * 7일 이상 된 AI 생성 이미지를 삭제합니다 (repo 비대화 방지).
+ */
+function cleanupOldAiImages() {
+    if (!fs.existsSync(AI_IMAGE_DIR)) return;
+    const now = Date.now();
+    const maxAge = 7 * 24 * 60 * 60 * 1000;
+    const files = fs.readdirSync(AI_IMAGE_DIR);
+    for (const file of files) {
+        const filePath = path.join(AI_IMAGE_DIR, file);
+        const stat = fs.statSync(filePath);
+        if (now - stat.mtimeMs > maxAge) {
+            fs.unlinkSync(filePath);
+            console.log(`🗑️ Cleaned up old AI image: ${file}`);
+        }
+    }
 }
 
 /**
@@ -252,15 +287,40 @@ async function postToInstagram() {
 
     // 스마트 에셋 파이프라인 작동
     let finalImageUrl = await searchDriveForItem(itemName);
+    let aiImageGenerated = false;
 
     if (!finalImageUrl) {
         console.log("📦 Not found on Drive. Trying AI Generation...");
-        finalImageUrl = await generateImageWithGemini(itemName);
+        const aiResult = await generateImageWithGemini(itemName);
+
+        if (aiResult) {
+            // AI 이미지가 생성되면 먼저 GitHub에 push해서 공개 URL을 확보
+            console.log("📤 Pushing AI image to GitHub for public URL...");
+            const { execSync } = await import('child_process');
+            try {
+                execSync('git config --local user.email "github-actions[bot]@users.noreply.github.com"', { stdio: 'pipe' });
+                execSync('git config --local user.name "github-actions[bot]"', { stdio: 'pipe' });
+                execSync(`git add "${aiResult.filePath}"`, { stdio: 'pipe' });
+                execSync(`git commit -m "chore: AI 생성 이미지 추가 (${aiResult.filename})"`, { stdio: 'pipe' });
+                execSync('git pull --rebase origin main', { stdio: 'pipe' });
+                execSync('git push', { stdio: 'pipe' });
+                console.log("✅ AI image pushed to GitHub successfully!");
+
+                // GitHub CDN 캐시 반영 대기
+                console.log("⏳ Waiting 15s for GitHub CDN...");
+                await new Promise(resolve => setTimeout(resolve, 15000));
+
+                finalImageUrl = aiResult.url;
+                aiImageGenerated = true;
+            } catch (gitErr) {
+                console.warn(`⚠️ Git push failed: ${gitErr.message}. Using fallback image.`);
+            }
+        }
     }
 
     if (!finalImageUrl) {
-        console.log("💡 Using default high-quality food image as fallback.");
-        finalImageUrl = "https://raw.githubusercontent.com/recurser/exif-orientation-examples/master/Landscape_1.jpg";
+        console.log("💡 Using fallback image from Google Drive.");
+        finalImageUrl = "https://lh3.googleusercontent.com/d/15sIvSOnbuX3jTwibMgBAKRCGZ7ZKEfzC";
     }
 
     if (!ACCESS_TOKEN || !IG_USER_ID) {
@@ -317,14 +377,18 @@ async function postToInstagram() {
         console.log("🎉 Successfully published to Instagram!");
         console.log(`Check it out: https://www.instagram.com/hanbap_doksan/`);
 
+        // 오래된 AI 생성 이미지 정리 (7일 이상)
+        cleanupOldAiImages();
+
         // 텔레그램 성공 알림
+        const imageSource = aiImageGenerated ? '🎨 AI 생성' : finalImageUrl.includes('drive') ? '📁 구글드라이브' : '🖼️ 기본이미지';
         const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
         const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
         if (BOT_TOKEN && CHAT_ID) {
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CHAT_ID, text: `📸 [인스타 포스팅 완료] ${itemName}\n${caption.split('\n').slice(0, 3).join('\n')}\n\nhttps://www.instagram.com/hanbap_doksan/` })
+                body: JSON.stringify({ chat_id: CHAT_ID, text: `📸 [인스타 포스팅 완료] ${itemName}\n이미지: ${imageSource}\n${caption.split('\n').slice(0, 3).join('\n')}\n\nhttps://www.instagram.com/hanbap_doksan/` })
             });
         }
 
