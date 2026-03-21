@@ -22,6 +22,11 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID;
 
 const BASE_URL = `https://graph.facebook.com/v25.0`;
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+function toKSTDateString(date = new Date()) {
+    return new Date(date.getTime() + KST_OFFSET_MS).toISOString().split('T')[0];
+}
 
 // 메뉴 데이터 (frontend/src/data/menuData.ts에서 발췌)
 const MENU_DATA = [
@@ -77,9 +82,9 @@ async function searchDriveForItem(itemName) {
         
         const files = res.data.files;
         if (files && files.length > 0) {
-            console.log(`✅ Found on Drive: ${files[0].name}`);
-            // Meta API용 더 직접적인 이미지 링크 형식
-            return `https://lh3.googleusercontent.com/d/${files[0].id}`;
+            const picked = files[Math.floor(Math.random() * files.length)];
+            console.log(`✅ Found on Drive: ${picked.name} (${files.length}개 중 랜덤 선택)`);
+            return `https://lh3.googleusercontent.com/d/${picked.id}`;
         }
     } catch (err) {
         console.warn(`⚠️ Drive search failed: ${err.message}`);
@@ -128,9 +133,7 @@ async function generateImageWithGemini(itemName) {
                 const safeName = itemName.replace(/\s/g, '_');
                 const filename = `${timestamp}_${safeName}.png`;
 
-                if (!fs.existsSync(AI_IMAGE_DIR)) {
-                    fs.mkdirSync(AI_IMAGE_DIR, { recursive: true });
-                }
+                fs.mkdirSync(AI_IMAGE_DIR, { recursive: true });
 
                 const filePath = path.join(AI_IMAGE_DIR, filename);
                 fs.writeFileSync(filePath, Buffer.from(imagePart.inlineData.data, 'base64'));
@@ -206,10 +209,10 @@ function generateReviewCaption(review) {
  * 7일 이상 된 AI 생성 이미지를 삭제합니다 (repo 비대화 방지).
  */
 function cleanupOldAiImages() {
-    if (!fs.existsSync(AI_IMAGE_DIR)) return;
+    let files;
+    try { files = fs.readdirSync(AI_IMAGE_DIR); } catch { return; }
     const now = Date.now();
     const maxAge = 7 * 24 * 60 * 60 * 1000;
-    const files = fs.readdirSync(AI_IMAGE_DIR);
     for (const file of files) {
         const filePath = path.join(AI_IMAGE_DIR, file);
         const stat = fs.statSync(filePath);
@@ -226,21 +229,31 @@ function cleanupOldAiImages() {
 async function postToInstagram() {
     console.log("🚀 Starting Smart Automation Pipeline...");
 
-    // 오늘 날짜 확인 (KST 기준 YYYY-MM-DD)
-    const today = new Date(new Date().getTime() + (9 * 60 * 60 * 1000)).toISOString().split('T')[0];
+    const today = toKSTDateString();
+
+    // 중복 포스팅 방지: 오늘 이미 포스팅했으면 스킵
+    try {
+        const existing = JSON.parse(fs.readFileSync(TODAY_PROMO_FILE, 'utf8'));
+        const lastDate = toKSTDateString(new Date(existing.lastUpdated));
+        if (lastDate === today) {
+            console.log(`⏭️ Already posted today (${today}): ${existing.itemName}. Skipping.`);
+            return;
+        }
+    } catch (err) {
+        if (err.code !== 'ENOENT') console.warn("⚠️ Failed to check today_promo:", err.message);
+    }
+
     let reservedPost = null;
 
     // 예약 목록 확인
-    if (fs.existsSync(SCHEDULE_FILE)) {
-        try {
-            const schedules = JSON.parse(fs.readFileSync(SCHEDULE_FILE, 'utf8'));
-            if (schedules[today]) {
-                reservedPost = schedules[today];
-                console.log(`📅 Found reserved post for today (${today}): ${reservedPost.name}`);
-            }
-        } catch (err) {
-            console.warn("⚠️ Failed to read schedule file:", err.message);
+    try {
+        const schedules = JSON.parse(fs.readFileSync(SCHEDULE_FILE, 'utf8'));
+        if (schedules[today]) {
+            reservedPost = schedules[today];
+            console.log(`📅 Found reserved post for today (${today}): ${reservedPost.name}`);
         }
+    } catch (err) {
+        if (err.code !== 'ENOENT') console.warn("⚠️ Failed to read schedule file:", err.message);
     }
 
     // 포스팅 타입과 콘텐츠 결정
@@ -401,10 +414,7 @@ async function postToInstagram() {
                 imageUrl: finalImageUrl,
                 caption: caption
             };
-            const dir = path.dirname(TODAY_PROMO_FILE);
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
-            }
+            fs.mkdirSync(path.dirname(TODAY_PROMO_FILE), { recursive: true });
             fs.writeFileSync(TODAY_PROMO_FILE, JSON.stringify(promoData, null, 2));
             console.log(`✅ Sync file updated for website: ${TODAY_PROMO_FILE}`);
         } catch (syncErr) {
