@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026.3.21",
+  "lastUpdated": "2026.3.22",
   "today": {
     "total": 0,
     "naver": 0,
@@ -17,6 +17,10 @@
     },
     {
       "date": "2026.3.21",
+      "count": 0
+    },
+    {
+      "date": "2026.3.22",
       "count": 0
     }
   ],
