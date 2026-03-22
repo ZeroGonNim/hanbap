@@ -183,6 +183,11 @@ GitHub Actions 또는 로컬에서:
 - **SKILLS_GUIDE.md 업데이트**: 참고 에이전트 섹션 추가
 - **GitHub CLI 설치**: `gh` 인증 완료 (워크플로우 디버깅용)
 
+### 2026-03-22: Git 동기화 실패 수정
+- **문제**: 3월 21~22일 이틀 연속 인스타 포스팅은 성공하나 git commit/push 실패 → 텔레그램 `⚠️ [Git 동기화 실패]` 알림 발생
+- **원인**: `instagram-post.yml`의 `git add` 단계에서 `frontend/public/images/ai-generated/` 경로가 존재하지 않아 `fatal: pathspec did not match any files` (exit code 128)로 전체 git-sync 단계 실패
+- **수정**: `git add --ignore-errors ... 2>/dev/null || true`로 존재하지 않는 경로를 무시하도록 변경. 변경사항 없으면 커밋 스킵 후 정상 종료. 불필요한 `git stash/pop` 로직 제거 (커밋 후 rebase하므로 stash 불필요)
+
 ### 2026-03-22: 텔레그램 실패 알림 단계 구분
 - **문제**: 인스타 포스팅은 성공했으나 이후 git commit/push 단계 실패 시에도 `❌ [인스타그램 포스팅 실패]`로 알림이 가서 혼동 발생
 - **원인**: `instagram-post.yml`의 `if: failure()` 알림이 토큰 만료 외에는 모두 동일한 "포스팅 실패" 메시지 전송
