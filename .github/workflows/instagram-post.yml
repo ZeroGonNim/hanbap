@@ -51,6 +51,7 @@ jobs:
         run: npm install
 
       - name: 인스타그램 포스팅 실행
+        id: posting
         run: node scripts/instagram_automation/integrated_auto_promo.js
         env:
           ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
@@ -64,6 +65,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: 변경사항 커밋 (today_promo 업데이트)
+        id: git-sync
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -80,11 +82,17 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TOKEN_VALID: ${{ env.TOKEN_VALID }}
+          POSTING_RESULT: ${{ steps.posting.outcome }}
+          GIT_SYNC_RESULT: ${{ steps.git-sync.outcome }}
         run: |
           if [ "$TOKEN_VALID" = "false" ]; then
             MSG="🔑 [인스타그램] 토큰이 만료되었습니다! GitHub Secrets(IG_ACCESS_TOKEN)을 갱신해주세요."
+          elif [ "$POSTING_RESULT" = "failure" ]; then
+            MSG="❌ [인스타 포스팅 실패] 인스타그램 게시에 실패했습니다."
+          elif [ "$GIT_SYNC_RESULT" = "failure" ]; then
+            MSG="⚠️ [Git 동기화 실패] 인스타 포스팅은 성공했으나, 변경사항 커밋/푸시에 실패했습니다. 인스타는 정상 게시되었으니 참고해주세요."
           else
-            MSG="❌ [인스타그램 포스팅 실패] 워크플로우가 실패했습니다."
+            MSG="❌ [인스타그램 워크플로우 실패] 알 수 없는 단계에서 실패했습니다."
           fi
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -H "Content-Type: application/json" \
