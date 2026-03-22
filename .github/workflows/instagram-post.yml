@@ -69,11 +69,10 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add frontend/public/data/ frontend/public/images/ai-generated/ scripts/instagram_automation/scheduled_posts.json
-          git diff --staged --quiet || git commit -m "chore: 인스타그램 포스팅 및 today_promo 업데이트 $(date +'%Y-%m-%d')"
-          git stash --include-untracked || true
+          git add --ignore-errors frontend/public/data/ frontend/public/images/ai-generated/ scripts/instagram_automation/scheduled_posts.json 2>/dev/null || true
+          git diff --staged --quiet && echo "변경사항 없음, 커밋 스킵" && exit 0
+          git commit -m "chore: 인스타그램 포스팅 및 today_promo 업데이트 $(date +'%Y-%m-%d')"
           git pull --rebase origin main
-          git stash pop || true
           git push
 
       - name: 실패 시 텔레그램 알림
