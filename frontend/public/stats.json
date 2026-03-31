@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026.3.30",
+  "lastUpdated": "2026.3.31",
   "today": {
     "total": 0,
     "naver": 0,
@@ -7,10 +7,6 @@
     "google": 0
   },
   "weeklyTrend": [
-    {
-      "date": "2026.3.24",
-      "count": 0
-    },
     {
       "date": "2026.3.25",
       "count": 0
@@ -33,6 +29,10 @@
     },
     {
       "date": "2026.3.30",
+      "count": 0
+    },
+    {
+      "date": "2026.3.31",
       "count": 0
     }
   ],
