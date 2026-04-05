@@ -66,26 +66,48 @@ class Reporter {
             }
         }
 
+        // 전체 아카이브: 중복 제거 후 크기 제한 없이 저장
         const seen = new Set<string>();
-        const merged = [...newReviews, ...existing].filter(r => {
+        const archive = [...newReviews, ...existing].filter(r => {
             const hash = createHash('md5').update(r.content).digest('hex');
             if (seen.has(hash)) return false;
             seen.add(hash);
             return true;
         });
 
-        const feed = merged.slice(0, MAX_FEED_SIZE);
-        // atomic write: 임시 파일에 먼저 쓰고 rename으로 교체 (Race Condition 방지)
+        // src/data/reviews.json = 전체 아카이브 (크기 제한 없음)
         const tmpPath = `${FRONTEND_REVIEWS_PATH}.tmp`;
-        fs.writeFileSync(tmpPath, JSON.stringify(feed, null, 2), 'utf-8');
+        fs.writeFileSync(tmpPath, JSON.stringify(archive, null, 2), 'utf-8');
         fs.renameSync(tmpPath, FRONTEND_REVIEWS_PATH);
 
-        // JSON Feed 동시 업데이트: public/data/reviews.json (런타임 동적 로드용)
+        // 플랫폼별 고르게 섞기: 각 플랫폼 최신순 → 인터리브
+        const byPlatform: Record<string, FrontendReview[]> = {};
+        for (const r of archive) {
+            if (!byPlatform[r.platform]) byPlatform[r.platform] = [];
+            byPlatform[r.platform].push(r);
+        }
+        const platformQueues = Object.values(byPlatform);
+        const interleaved: FrontendReview[] = [];
+        let i = 0;
+        while (interleaved.length < MAX_FEED_SIZE) {
+            let added = false;
+            for (const queue of platformQueues) {
+                if (queue[i]) {
+                    interleaved.push(queue[i]);
+                    added = true;
+                    if (interleaved.length >= MAX_FEED_SIZE) break;
+                }
+            }
+            if (!added) break;
+            i++;
+        }
+
+        // public/data/reviews.json = 인터리브된 20건 (런타임 동적 로드용)
         fs.mkdirSync(path.dirname(FRONTEND_REVIEWS_PUBLIC_PATH), { recursive: true });
         const tmpPublicPath = `${FRONTEND_REVIEWS_PUBLIC_PATH}.tmp`;
-        fs.writeFileSync(tmpPublicPath, JSON.stringify(feed, null, 2), 'utf-8');
+        fs.writeFileSync(tmpPublicPath, JSON.stringify(interleaved, null, 2), 'utf-8');
         fs.renameSync(tmpPublicPath, FRONTEND_REVIEWS_PUBLIC_PATH);
-        console.log(`> 랜딩페이지 리뷰 피드 업데이트: ${feed.length}건 (신규 ${newReviews.length}건 반영)`);
+        console.log(`> 랜딩페이지 리뷰 피드 업데이트: ${interleaved.length}건 노출 / 아카이브 ${archive.length}건 (신규 ${newReviews.length}건 반영)`);
     }
 
     /**

@@ -75,25 +75,48 @@ export class ReviewCollector {
                 { waitUntil: 'networkidle', timeout: PAGE_TIMEOUT_MS }
             );
 
-            await this.randomDelay();
+            // 초기 리뷰 렌더링 대기
+            await page.waitForSelector('li.place_apply_pui', { timeout: 10000 }).catch(() => null);
+            await this.randomDelay(1000, 2000);
 
-            for (let i = 0; i < 3; i++) {
-                await page.mouse.wheel(0, 800);
-                await this.randomDelay(500, 1000);
-            }
+            // "펼쳐서 더보기" 반복 클릭으로 리뷰 최대 로드 (10건씩 추가됨)
+            let prevCount = -1;
+            let noChangeCount = 0;
+            for (let attempt = 0; attempt < 20; attempt++) {
+                // 페이지 하단 스크롤
+                for (let i = 0; i < 3; i++) {
+                    await page.mouse.wheel(0, 800);
+                    await this.randomDelay(300, 500);
+                }
 
-            const moreBtn = page.locator('a[data-pui-click-code="rvshowmore"]').first();
-            if (await moreBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-                await moreBtn.click();
-                await this.randomDelay(1000, 2000);
+                // "펼쳐서 더보기" 버튼 클릭 (10건씩 추가 로드)
+                const expandBtn = page.locator('a.fvwqf').first();
+                const expandVisible = await expandBtn.isVisible({ timeout: 2000 }).catch(() => false);
+                if (expandVisible) {
+                    await expandBtn.click();
+                    await this.randomDelay(1500, 2500);
+                }
+
+                const currentCount = await page.evaluate(() =>
+                    document.querySelectorAll('li.place_apply_pui.EjjAW').length
+                );
+                console.log(`[Naver] 시도 ${attempt + 1}회 — 현재 ${currentCount}건 로드`);
+
+                if (currentCount === prevCount) {
+                    noChangeCount++;
+                    if (noChangeCount >= 2) break;
+                } else {
+                    noChangeCount = 0;
+                }
+                prevCount = currentCount;
             }
 
             const reviews = await page.evaluate(() => {
-                const items = document.querySelectorAll('li.p_v_item, li.ug_v_m, li.OW9Y_');
+                const items = document.querySelectorAll('li.place_apply_pui.EjjAW');
                 return Array.from(items).map(item => ({
-                    author: item.querySelector('.N-A-F, .u_v_y')?.textContent?.trim() || '익명',
-                    content: item.querySelector('.z_v_o, .rv_v_v')?.textContent?.trim() || '',
-                    date: item.querySelector('.P_v_q, .u_v_b')?.textContent?.trim() || ''
+                    author: item.querySelector('.pui__JiVbY3')?.textContent?.trim() || '익명',
+                    content: item.querySelector('.pui__vn15t2 a')?.textContent?.trim() || '',
+                    date: item.querySelector('time')?.textContent?.trim() || ''
                 }));
             });
 
@@ -130,19 +153,26 @@ export class ReviewCollector {
             );
             await this.randomDelay();
 
-            await page.waitForSelector('.list_evaluation li, .review_info', { timeout: 10000 });
+            await page.waitForSelector('.inner_review', { timeout: 10000 });
 
             const reviews = await page.evaluate(() => {
-                const items = document.querySelectorAll('.list_evaluation li, .review_info');
+                const items = document.querySelectorAll('.inner_review');
                 return Array.from(items).map(item => {
-                    const author = item.querySelector('.link_user, .txt_username')?.textContent?.trim() || '익명';
-                    const content = item.querySelector('.txt_comment, .desc_comment')?.textContent?.trim() || '';
-                    const date = item.querySelector('.time_write, .txt_date')?.textContent?.trim() || '';
+                    // 작성자: .name_user 안에 "리뷰어 이름," 숨김 텍스트 제거
+                    const nameEl = item.querySelector('.name_user');
+                    const screenOut = nameEl?.querySelector('.screen_out')?.textContent || '';
+                    const author = nameEl?.textContent?.replace(screenOut, '').trim() || '익명';
 
-                    const starElem = item.querySelector('.ico_star, .inner_star');
-                    const style = starElem?.getAttribute('style') || '';
-                    const ratingMatch = style.match(/width:(\d+)%/);
-                    const rating = (ratingMatch && ratingMatch[1]) ? parseInt(ratingMatch[1]) / 20 : 5;
+                    const content = item.querySelector('.desc_review')?.textContent?.trim() || '';
+
+                    // 날짜: .info_grade 텍스트에서 패턴 추출 (예: "별점5.02025.10.14.")
+                    const gradeText = item.querySelector('.info_grade')?.textContent || '';
+                    const dateMatch = gradeText.match(/(\d{4}\.\d{1,2}\.\d{1,2})/);
+                    const date = dateMatch ? dateMatch[1] : '';
+
+                    // 별점: .info_grade에서 "별점N.N" 추출
+                    const ratingMatch = gradeText.match(/별점(\d+\.?\d*)/);
+                    const rating = ratingMatch ? parseFloat(ratingMatch[1]) : 5;
 
                     return { author, content, date, rating };
                 });
