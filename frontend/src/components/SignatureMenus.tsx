@@ -11,7 +11,7 @@ const SIGNATURES = [
     { name: "제육볶음", price: "12,000", desc: "단골들이 보증하는 밥도둑 정석" }
 ];
 
-const SignatureMenus: React.FC<SignatureMenusProps> = ({ onOpenFullMenu }) => {
+const SignatureMenus = React.memo<SignatureMenusProps>(({ onOpenFullMenu }) => {
     return (
         <section className="px-6 mb-16">
             <h2 className="text-4xl font-black text-brand mb-10 text-center flex items-center justify-center gap-3 tracking-tight">
@@ -44,6 +44,7 @@ const SignatureMenus: React.FC<SignatureMenusProps> = ({ onOpenFullMenu }) => {
             </button>
         </section>
     );
-};
+});
 
+SignatureMenus.displayName = 'SignatureMenus';
 export default SignatureMenus;

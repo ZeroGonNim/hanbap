@@ -1,56 +1,63 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #ffffff;
-  --color-secondary: #FFD700;
-  /* Vibrant Yellow */
-  --color-accent: #4CAF50;
-  /* Fresh Green */
-  --color-brand: #222222;
-  /* Strong Dark Grey for text */
-  --color-brand-red: #E53935;
-  /* Warm Red for emphasis */
-  --color-warm-beige: #FFFDF0;
-  /* Bright, warm off-white background */
-  --color-soft-orange: #FFF59D;
-  /* Soft yellow for pastel backgrounds */
-  --color-bone-white: #ffffff;
+  /* Supanova Brand Colors */
+  --color-hb-cream: #FBF9F4;      /* Primary Background */
+  --color-hb-beige: #F5EDE3;      /* Secondary Background */
+  --color-hb-brown: #3B2517;      /* Main Text */
+  --color-hb-red: #A03A30;        /* Accent Red (Heritage) */
+  --color-hb-gold: #D4874D;       /* Accent Gold (Warmth) */
+  --color-hb-border: #E8D5C0;     /* Fine Border */
+  --color-hb-muted: #8C7160;      /* Muted Text */
 
-  --font-serif: "Pretendard", "Inter", sans-serif;
-  --font-sans: "Pretendard", "Inter", sans-serif;
-  --font-gowun: "Pretendard", "Inter", sans-serif;
-  --font-brush: "Nanum Brush Script", cursive;
+  /* Legacy Compatibility Bridge */
+  --color-primary: #FBF9F4;
+  --color-secondary: #A03A30;
+  --color-brand: #3B2517;
+  --color-warm-beige: #F5EDE3;
+
+  /* Typography */
+  --font-serif-kr: "Noto Serif KR", serif;
+  --font-sans-kr: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-serif: "Noto Serif KR", serif;
+  --font-sans: Pretendard, sans-serif;
+
+  /* Spacing & Utilities */
+  --tracking-ultra-tight: -0.05em;
+  --tracking-wide-editorial: 0.15em;
+
+  /* Shadows */
+  --shadow-premium: 0 20px 60px -15px rgba(59, 37, 23, 0.08);
+  --shadow-soft: 0 4px 20px rgba(59, 37, 23, 0.05);
+  --shadow-inner-light: inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
 @layer base {
   body {
-    @apply bg-warm-beige text-brand font-sans antialiased;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-sans text-brand tracking-tight;
+    @apply bg-hb-cream text-hb-brown antialiased selection:bg-hb-red selection:text-white;
+    font-family: var(--font-serif-kr);
   }
 }
 
-.heading-premium {
-  @apply font-serif italic text-accent;
-}
+@layer components {
+  /* Supanova Paper Texture Overlay */
+  .paper-texture {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
 
-.shadow-soft {
-  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
-  /* Modern slate shadow */
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  /* Scroll Reveal Helper */
+  .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-on-scroll.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

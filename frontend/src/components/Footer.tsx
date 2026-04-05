@@ -7,7 +7,7 @@ interface FooterProps {
     onShare: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onShare }) => {
+const Footer = React.memo<FooterProps>(({ onShare }) => {
     return (
         <footer className="bg-brand py-6 px-6 text-warm-beige text-center">
             <div className="max-w-md mx-auto space-y-4">
@@ -32,6 +32,7 @@ const Footer: React.FC<FooterProps> = ({ onShare }) => {
             </div>
         </footer>
     );
-};
+});
 
+Footer.displayName = 'Footer';
 export default Footer;

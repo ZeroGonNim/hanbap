@@ -1,103 +1,85 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Instagram, Calendar, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface PromoData {
-    lastUpdated: string;
-    postType: string;
-    itemName: string;
-    imageUrl: string;
-    caption: string;
+  itemName: string;
+  imageUrl: string;
+  caption: string;
+  lastUpdated: string;
 }
 
-const TodayPromo: React.FC = () => {
-    const [promo, setPromo] = useState<PromoData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+const TodayPromo = () => {
+  const [promo, setPromo] = useState<PromoData | null>(null);
 
-    useEffect(() => {
-        const fetchPromo = async () => {
-            try {
-                const response = await fetch('/data/today_promo.json');
-                if (response.ok) {
-                    const data = await response.json();
-                    setPromo(data);
-                }
-            } catch (error) {
-                console.error('Failed to fetch today promo:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+  useEffect(() => {
+    fetch('/data/today_promo.json')
+      .then(res => res.json())
+      .then(data => setPromo(data))
+      .catch(() => { /* 오늘의 메뉴 데이터 없음 — 섹션 숨김 처리됨 */ });
+  }, []);
 
-        fetchPromo();
-    }, []);
+  if (!promo) return null;
 
-    if (isLoading || !promo || !promo.itemName) return null;
+  return (
+    <div className="px-6 py-20">
+      <div className="text-center mb-12">
+        <span className="text-hb-red font-bold text-xs tracking-wide-editorial uppercase mb-2 block">Recommendation of the Day</span>
+        <h3 className="text-3xl font-black">오늘, 사장님의 선택</h3>
+      </div>
 
-    // KST 시간 포맷 (오늘인지 확인)
-    const postDate = new Date(promo.lastUpdated);
-    const isToday = new Date().toDateString() === postDate.toDateString();
+      <div className="relative group max-w-2xl mx-auto">
+        {/* Double Bezel Architecture */}
+        <div className="bg-hb-brown/5 ring-1 ring-hb-brown/5 p-2 rounded-[2.5rem] shadow-premium">
+          <div className="bg-white rounded-[calc(2.5rem-0.5rem)] overflow-hidden shadow-inner-light border border-hb-border">
+            
+            {/* Visual Part */}
+            <div className="relative h-[450px] overflow-hidden">
+              <motion.img
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                src={promo.imageUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80'}
+                alt={promo.itemName}
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-hb-brown/60 via-transparent to-transparent" />
+              
+              {/* Floating Menu Name (Vertical) */}
+              <div className="absolute top-10 right-10 bg-hb-red text-white py-8 px-4 font-black text-xl [writing-mode:vertical-rl] tracking-[0.2em] shadow-lg">
+                今日推荐: {promo.itemName}
+              </div>
 
-    return (
-        <AnimatePresence>
-            <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="px-6 mb-12"
-            >
-                <div className="max-w-4xl mx-auto bg-white rounded-[32px] overflow-hidden shadow-premium border border-warm-beige/50 flex flex-col md:flex-row">
-                    {/* 이미지 영역 */}
-                    <div className="w-full md:w-1/2 h-64 md:h-auto relative">
-                        <img 
-                            src={promo.imageUrl} 
-                            alt={promo.itemName}
-                            className="w-full h-full object-cover"
-                        />
-                        <div className="absolute top-4 left-4 bg-secondary text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 backdrop-blur-md">
-                            <Instagram size={14} />
-                            <span>인스타그램 추천</span>
-                        </div>
-                    </div>
+              {/* Price / Subtext overlay */}
+              <div className="absolute bottom-10 left-10 text-white">
+                <span className="text-xs font-bold tracking-widest uppercase opacity-80 mb-2 block">Special Recommendation</span>
+                <h4 className="text-4xl font-black tracking-tighter">{promo.itemName}</h4>
+              </div>
+            </div>
 
-                    {/* 텍스트 영역 */}
-                    <div className="w-full md:w-1/2 p-8 flex flex-col justify-center bg-boneWhite/30">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Sparkles className="text-secondary" size={20} />
-                            <span className="text-secondary font-bold text-sm tracking-wider uppercase">Today's Special</span>
-                        </div>
-                        
-                        <h3 className="text-3xl font-black text-brand mb-4 leading-tight">
-                            오늘의 {promo.postType === 'MENU' ? '추천 메뉴' : '인기 리뷰'}
-                        </h3>
-                        
-                        <div className="bg-white/80 p-5 rounded-2xl border border-warm-beige mb-6 shadow-sm">
-                            <p className="text-brand/90 font-bold text-lg mb-2">
-                                {promo.itemName}
-                            </p>
-                            <p className="text-brand/70 text-sm line-clamp-3 leading-relaxed italic">
-                                "{promo.caption.split('\n')[0]}"
-                            </p>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-brand/50 text-xs font-medium">
-                                <Calendar size={14} />
-                                <span>{isToday ? '오늘 업로드됨' : postDate.toLocaleDateString()}</span>
-                            </div>
-                            <a 
-                                href="https://www.instagram.com/hanbap_doksan/" 
-                                target="_blank" 
-                                rel="noreferrer"
-                                className="text-secondary font-bold text-sm flex items-center gap-1 hover:underline"
-                            >
-                                인스타에서 보기 →
-                            </a>
-                        </div>
-                    </div>
+            {/* Content Part */}
+            <div className="p-10 text-center md:text-left md:flex justify-between items-end gap-10">
+              <div className="flex-1">
+                <p className="text-hb-muted leading-relaxed text-lg break-keep-all font-serif-kr italic mb-6 md:mb-0">
+                  {promo.caption.split('\n\n')[2]?.replace('💬 ', '') || "사장님이 직접 고른 오늘의 신선한 재료로 준비한 일품 요리입니다."}
+                </p>
+              </div>
+              
+              <div className="shrink-0">
+                <div className="text-hb-red font-black text-3xl mb-1">
+                  ₩{promo.caption.match(/₩[\d,]+/)?.[0].replace('₩', '') || '시가'}
                 </div>
-            </motion.section>
-        </AnimatePresence>
-    );
+                <div className="text-hb-muted text-[0.65rem] font-bold tracking-widest uppercase">
+                  Authentic Taste since 1990
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default TodayPromo;

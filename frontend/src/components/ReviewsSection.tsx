@@ -21,7 +21,7 @@ const PLATFORM_COLORS: Record<string, { bg: string, text: string }> = {
     'Google': { bg: 'bg-[#4285F4]', text: 'text-white' },
 };
 
-const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
+const ReviewsSection = React.memo<ReviewsSectionProps>(({ reviews }) => {
     const [hasShuffled, setHasShuffled] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -106,7 +106,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
 
                         return (
                             <motion.div
-                                key={`${review.author}-${i}-${hasShuffled ? 'shuffled' : 'initial'}`}
+                                key={`${review.author}-${review.date}-${review.content.slice(0, 20)}`}
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
@@ -145,6 +145,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => {
             </div>
         </section>
     );
-};
+});
 
+ReviewsSection.displayName = 'ReviewsSection';
 export default ReviewsSection;

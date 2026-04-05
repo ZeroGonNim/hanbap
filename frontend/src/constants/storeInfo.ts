@@ -1,4 +1,4 @@
-import { StoreInfo } from '../types';
+import { type StoreInfo } from '../types';
 
 export const STORE_INFO: StoreInfo = {
     name: '한마음식당',

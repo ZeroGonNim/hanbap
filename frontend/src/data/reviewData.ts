@@ -1,4 +1,4 @@
-import { Review } from '../types';
+import { type Review } from '../types';
 import crawledReviews from './reviews.json';
 
 const MANUAL_REVIEWS: Review[] = [

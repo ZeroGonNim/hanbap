@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
-import { MenuCategory } from '../types';
+import { type MenuCategory } from '../types';
 
 interface FullMenuModalProps {
     isOpen: boolean;
