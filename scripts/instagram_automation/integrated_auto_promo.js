@@ -309,24 +309,37 @@ async function postToInstagram() {
         if (aiResult) {
             // AI 이미지가 생성되면 먼저 GitHub에 push해서 공개 URL을 확보
             console.log("📤 Pushing AI image to GitHub for public URL...");
-            const { execSync } = await import('child_process');
-            try {
-                execSync('git config --local user.email "github-actions[bot]@users.noreply.github.com"', { stdio: 'pipe' });
-                execSync('git config --local user.name "github-actions[bot]"', { stdio: 'pipe' });
-                execSync(`git add "${aiResult.filePath}"`, { stdio: 'pipe' });
-                execSync(`git commit -m "chore: AI 생성 이미지 추가 (${aiResult.filename})"`, { stdio: 'pipe' });
-                execSync('git pull --rebase origin main', { stdio: 'pipe' });
-                execSync('git push', { stdio: 'pipe' });
-                console.log("✅ AI image pushed to GitHub successfully!");
+            const { spawnSync } = await import('child_process');
 
-                // GitHub CDN 캐시 반영 대기
-                console.log("⏳ Waiting 15s for GitHub CDN...");
-                await new Promise(resolve => setTimeout(resolve, 15000));
+            // 파일명 검증 — 경로 트래버설 및 셸 인젝션 방지
+            const safeFilename = /^[\w가-힣\-. ]+$/.test(aiResult.filename);
+            if (!safeFilename) {
+                console.warn(`⚠️ 안전하지 않은 파일명 감지: ${aiResult.filename}. Git push 건너뜁니다.`);
+            } else {
+                try {
+                    const run = (cmd, args) => {
+                        const result = spawnSync(cmd, args, { stdio: 'pipe', encoding: 'utf-8' });
+                        if (result.status !== 0) throw new Error(result.stderr || result.stdout || `exit ${result.status}`);
+                        return result.stdout;
+                    };
 
-                finalImageUrl = aiResult.url;
-                aiImageGenerated = true;
-            } catch (gitErr) {
-                console.warn(`⚠️ Git push failed: ${gitErr.message}. Using fallback image.`);
+                    run('git', ['config', '--local', 'user.email', 'github-actions[bot]@users.noreply.github.com']);
+                    run('git', ['config', '--local', 'user.name', 'github-actions[bot]']);
+                    run('git', ['add', aiResult.filePath]);
+                    run('git', ['commit', '-m', `chore: AI 생성 이미지 추가 (${aiResult.filename})`]);
+                    run('git', ['pull', '--rebase', 'origin', 'main']);
+                    run('git', ['push']);
+                    console.log("✅ AI image pushed to GitHub successfully!");
+
+                    // GitHub CDN 캐시 반영 대기
+                    console.log("⏳ Waiting 15s for GitHub CDN...");
+                    await new Promise(resolve => setTimeout(resolve, 15000));
+
+                    finalImageUrl = aiResult.url;
+                    aiImageGenerated = true;
+                } catch (gitErr) {
+                    console.warn(`⚠️ Git push failed: ${gitErr.message}. Using fallback image.`);
+                }
             }
         }
     }
@@ -369,22 +382,28 @@ async function postToInstagram() {
         publishUrl.searchParams.append('creation_id', creationId);
         publishUrl.searchParams.append('access_token', ACCESS_TOKEN);
 
-        let publishRes = await fetch(publishUrl.toString(), { method: 'POST' });
-        
-        // 간단한 재시도 로직 (한 번 더 대기)
-        if (!publishRes.ok) {
+        // Exponential backoff 재시도 (최대 3회: 30s → 60s → 120s)
+        const MAX_RETRIES = 3;
+        let publishRes = null;
+        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            publishRes = await fetch(publishUrl.toString(), { method: 'POST' });
+            if (publishRes.ok) break;
+
             const errorData = await publishRes.json();
-            if (errorData.error && errorData.error.code === 9007) {
-                console.log("⚠️ Media still processing. Waiting another 30s...");
-                await new Promise(resolve => setTimeout(resolve, 30000));
-                publishRes = await fetch(publishUrl.toString(), { method: 'POST' });
+            const isProcessing = errorData.error?.code === 9007;
+
+            if (attempt < MAX_RETRIES && isProcessing) {
+                const waitSec = 30 * Math.pow(2, attempt - 1); // 30s, 60s, 120s
+                console.log(`⚠️ Media still processing (attempt ${attempt}/${MAX_RETRIES}). Waiting ${waitSec}s...`);
+                await new Promise(resolve => setTimeout(resolve, waitSec * 1000));
+            } else {
+                console.error("❌ Publishing failed:", JSON.stringify(errorData, null, 2));
+                throw new Error(`Publishing failed: ${errorData.error?.message || 'Unknown error'}`);
             }
         }
 
-        if (!publishRes.ok) {
-            const publishData = await publishRes.json();
-            console.error("❌ Publishing failed:", JSON.stringify(publishData, null, 2));
-            throw new Error(`Publishing failed: ${publishData.error?.message || 'Unknown error'}`);
+        if (!publishRes || !publishRes.ok) {
+            throw new Error('Publishing failed after max retries');
         }
 
         console.log("🎉 Successfully published to Instagram!");
