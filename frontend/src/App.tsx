@@ -19,13 +19,15 @@ const LocationModal = lazy(() => import('./components/LocationModal'));
 // Data & Stores
 import { STORE_INFO } from './constants/storeInfo';
 import { MENU_DATA } from './data/menuData';
-import { REVIEW_DATA } from './data/reviewData';
+import { REVIEW_DATA } from './data/reviewData'; // 정적 폴백 (fetch 실패 시 사용)
 import { useToastStore } from './stores/useToastStore';
+import type { Review } from './types';
 
 const App = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLocationOpen, setIsLocationOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [reviewData, setReviewData] = useState<Review[]>([]);
     const showToast = useToastStore((state) => state.showToast);
     
     // Progress bar for editorial reading feel
@@ -35,6 +37,14 @@ const App = () => {
         damping: 30,
         restDelta: 0.001
     });
+
+    // JSON Feed: 런타임 동적 로드 (pipeline이 reviews.json 업데이트 시 rebuild 없이 반영)
+    useEffect(() => {
+        fetch('/data/reviews.json')
+            .then(res => { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
+            .then((data: Review[]) => setReviewData(data))
+            .catch(() => setReviewData(REVIEW_DATA)); // 정적 폴백
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -134,7 +144,7 @@ const App = () => {
                 </section>
 
                 <section className="reveal-on-scroll">
-                    <ReviewsSection reviews={REVIEW_DATA} />
+                    <ReviewsSection reviews={reviewData} />
                 </section>
 
                 {/* Editorial Call to Actions */}

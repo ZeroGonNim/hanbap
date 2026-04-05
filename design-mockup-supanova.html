@@ -8,8 +8,11 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://images.unsplash.com">
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700;900&family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://lh3.googleusercontent.com">
+<!-- [🔴 FIX] Pretendard는 Google Fonts 미지원 → 별도 CDN으로 분리 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css">
+<!-- [🔴 FIX] Google Fonts URL에서 Pretendard 제거 -->
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -73,7 +76,7 @@
   .visual-image {
     width: 100%;
     height: 400px;
-    background: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80') center/cover;
+    background: url('https://lh3.googleusercontent.com/d/15sIvSOnbuX3jTwibMgBAKRCGZ7ZKEfzC') center/cover;
     border-radius: 2px;
   }
   .visual-badge {
@@ -89,7 +92,8 @@
     font-size: 0.8rem;
   }
   .visual-text { text-align: center; }
-  .visual-text h4 {
+  /* [🟠 FIX] h4 → h2 헤딩 위계 */
+  .visual-text h2 {
     font-size: 1.5rem;
     font-weight: 900;
     color: #a03a30;
@@ -323,8 +327,9 @@
     cursor: pointer;
     font-family: inherit;
     color: #3B2517;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
   }
+  .menu-full-btn { transition: background-color 0.2s, color 0.2s; }
   .menu-full-btn:hover { background: #3B2517; color: #FBF9F4; }
 
   /* ===== FOOTER ===== */
@@ -363,7 +368,7 @@
     border-radius: 4px;
     cursor: pointer;
     font-family: inherit;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
     text-decoration: none;
     text-align: center;
     display: block;
@@ -610,7 +615,7 @@
     <div class="visual-badge">30年 眞心</div>
   </div>
   <div class="visual-text">
-    <h4>허름함 뒤의 정갈함</h4>
+    <h2>허름함 뒤의 정갈함</h2>
     <p>건물은 낡았지만, 매일 아침 사장님이 직접 닦아 윤이 나는 식탁. 그 고집스러운 청결함이 맛의 기본입니다.</p>
   </div>
 </section>

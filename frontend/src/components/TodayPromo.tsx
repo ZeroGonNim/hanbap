@@ -37,7 +37,7 @@ const TodayPromo = () => {
               <motion.img
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                src={promo.imageUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80'}
+                src={promo.imageUrl || 'https://lh3.googleusercontent.com/d/15sIvSOnbuX3jTwibMgBAKRCGZ7ZKEfzC'}
                 alt={promo.itemName}
                 className="w-full h-full object-cover"
                 loading="lazy"

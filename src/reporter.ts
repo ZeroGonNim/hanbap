@@ -20,6 +20,8 @@ const PLATFORM_MAP: Record<string, FrontendReview['platform']> = {
 };
 
 const FRONTEND_REVIEWS_PATH = path.resolve('frontend/src/data/reviews.json');
+// JSON Feed: 런타임 동적 로드용 — rebuild 없이 최신 리뷰 반영
+const FRONTEND_REVIEWS_PUBLIC_PATH = path.resolve('frontend/public/data/reviews.json');
 const FRONTEND_STATS_PATH = path.resolve('frontend/public/stats.json');
 const MAX_FEED_SIZE = 20;
 
@@ -77,6 +79,12 @@ class Reporter {
         const tmpPath = `${FRONTEND_REVIEWS_PATH}.tmp`;
         fs.writeFileSync(tmpPath, JSON.stringify(feed, null, 2), 'utf-8');
         fs.renameSync(tmpPath, FRONTEND_REVIEWS_PATH);
+
+        // JSON Feed 동시 업데이트: public/data/reviews.json (런타임 동적 로드용)
+        fs.mkdirSync(path.dirname(FRONTEND_REVIEWS_PUBLIC_PATH), { recursive: true });
+        const tmpPublicPath = `${FRONTEND_REVIEWS_PUBLIC_PATH}.tmp`;
+        fs.writeFileSync(tmpPublicPath, JSON.stringify(feed, null, 2), 'utf-8');
+        fs.renameSync(tmpPublicPath, FRONTEND_REVIEWS_PUBLIC_PATH);
         console.log(`> 랜딩페이지 리뷰 피드 업데이트: ${feed.length}건 (신규 ${newReviews.length}건 반영)`);
     }
 

@@ -27,7 +27,7 @@ const HeroSection = React.memo(({ marketingCopy }: { marketingCopy?: string }) =
                 <div className="w-10 h-[1px] bg-hb-brown mx-auto mb-8" />
                 
                 <p className="text-lg md:text-xl text-hb-muted italic font-serif-kr leading-relaxed">
-                    "낡은 문 너머,<br/>일품의 맛이 머무는 곳"
+                    "독산동 34년,<br/>오늘도 한 자리"
                 </p>
             </motion.div>
 
