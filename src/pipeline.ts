@@ -22,7 +22,7 @@ async function runAutomationPipeline() {
             collector.collectNaverReviews('86727483'),
             collector.collectNaverBlogs('한마음식당'),
             collector.collectKakaoReviews('20641502'),
-            collector.collectGoogleReviews('ChIJN1t-zd6veDURSOf_p0bqXDo') // 한마음 식당 Google Place ID 예시
+            collector.collectGoogleReviews('ChIJN1t-zd6veDURSOf_p0bqXDo')
         ]);
 
         const rawCombined = [...naverReviews, ...naverBlogs, ...kakao, ...google];
@@ -93,7 +93,10 @@ async function runAutomationPipeline() {
     } catch (error) {
         console.error('!!! 파이프라인 실행 중 치명적 오류 발생 !!!');
         console.error(error);
-        await sendTelegram(`❌ [파이프라인 오류] ${error}`);
+        await sendTelegram(`❌ [파이프라인 오류] ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+        // 브라우저 인스턴스 반드시 종료 (메모리 누수 방지)
+        await collector.close();
     }
 }
 

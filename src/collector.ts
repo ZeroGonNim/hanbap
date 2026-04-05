@@ -1,12 +1,14 @@
-import { chromium, type Browser, type Page } from 'playwright';
+import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 import { type Review } from './types.js';
 
 /**
  * [Expert Team Review - Lead Developer]
  * 1. 보안/우회: 랜덤 User-Agent와 지연 시간을 통해 안티봇 정책을 우회합니다.
  * 2. 확장성: 플랫폼 클래스가 변경되어도 대응 가능하도록 셀렉터 셋을 다각화했습니다.
- * 3. 안정성: 동적 렌더링 환경을 고려하여 네트워크 idle 상태와 명시적 대기 로직을 결합했습니다.
+ * 3. 안정성: 브라우저 인스턴스를 재사용하고 모든 goto에 타임아웃을 적용합니다.
  */
+
+const PAGE_TIMEOUT_MS = 30_000;
 
 export class ReviewCollector {
     private userAgents: string[] = [
@@ -16,6 +18,32 @@ export class ReviewCollector {
     ];
 
     private targetKeywords: string[] = ['고봉밥', '집밥', '13년', '신선', '청결', '제육'];
+
+    /** 공유 브라우저 인스턴스 — 세션 내 재사용 */
+    private browser: Browser | null = null;
+
+    private async getBrowser(): Promise<Browser> {
+        if (!this.browser || !this.browser.isConnected()) {
+            this.browser = await chromium.launch({ headless: true });
+        }
+        return this.browser;
+    }
+
+    private async newContext(): Promise<BrowserContext> {
+        const browser = await this.getBrowser();
+        return browser.newContext({
+            userAgent: this.userAgents[Math.floor(Math.random() * this.userAgents.length)] as string,
+            viewport: { width: 1280, height: 800 }
+        });
+    }
+
+    /** 세션 종료 시 브라우저 해제 */
+    public async close(): Promise<void> {
+        if (this.browser) {
+            await this.browser.close();
+            this.browser = null;
+        }
+    }
 
     /**
      * 랜덤 지연 생성 (안티봇 대응)
@@ -36,27 +64,24 @@ export class ReviewCollector {
      * 네이버 리뷰 수집 (Prod-level)
      */
     public async collectNaverReviews(placeId: string): Promise<Review[]> {
-        const browser = await chromium.launch({ headless: true });
-        const context = await browser.newContext({
-            userAgent: this.userAgents[Math.floor(Math.random() * this.userAgents.length)] as string,
-            viewport: { width: 1280, height: 800 }
-        });
+        const context = await this.newContext();
         const page = await context.newPage();
+        page.setDefaultTimeout(PAGE_TIMEOUT_MS);
 
         try {
             console.log(`[Naver] Accessing Place ID: ${placeId}...`);
-            // iframe 레이아웃을 건너뛰고 핵심 리뷰 인터페이스로 직접 접근
-            await page.goto(`https://pcmap.place.naver.com/restaurant/${placeId}/review/visitor`, { waitUntil: 'networkidle' });
+            await page.goto(
+                `https://pcmap.place.naver.com/restaurant/${placeId}/review/visitor`,
+                { waitUntil: 'networkidle', timeout: PAGE_TIMEOUT_MS }
+            );
 
             await this.randomDelay();
 
-            // 리뷰 목록이 로드될 때까지 점진적 스크롤
             for (let i = 0; i < 3; i++) {
                 await page.mouse.wheel(0, 800);
                 await this.randomDelay(500, 1000);
             }
 
-            // '더보기' 버튼이 있다면 자동 클릭 (strict mode 방지: first() 사용)
             const moreBtn = page.locator('a[data-pui-click-code="rvshowmore"]').first();
             if (await moreBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
                 await moreBtn.click();
@@ -73,7 +98,7 @@ export class ReviewCollector {
             });
 
             const filtered = reviews.filter(r => r.content.trim() !== '');
-            console.log(`[Naver] 수집 ${reviews.length}건 중 내용 있는 리뷰: ${filtered.length}건 (빈 리뷰 ${reviews.length - filtered.length}건 제외)`);
+            console.log(`[Naver] 수집 ${reviews.length}건 중 내용 있는 리뷰: ${filtered.length}건`);
 
             return filtered.map(r => ({
                 ...r,
@@ -85,7 +110,7 @@ export class ReviewCollector {
             console.error(`[Naver Error] ${error}`);
             return [];
         } finally {
-            await browser.close();
+            await context.close();
         }
     }
 
@@ -93,18 +118,18 @@ export class ReviewCollector {
      * 카카오 리뷰 수집 (Prod-level)
      */
     public async collectKakaoReviews(placeId: string): Promise<Review[]> {
-        const browser = await chromium.launch({ headless: true });
-        const context = await browser.newContext({
-            userAgent: this.userAgents[Math.floor(Math.random() * this.userAgents.length)] as string
-        });
+        const context = await this.newContext();
         const page = await context.newPage();
+        page.setDefaultTimeout(PAGE_TIMEOUT_MS);
 
         try {
             console.log(`[Kakao] Accessing Place ID: ${placeId}...`);
-            await page.goto(`https://place.map.kakao.com/${placeId}#review`, { waitUntil: 'load' });
+            await page.goto(
+                `https://place.map.kakao.com/${placeId}#review`,
+                { waitUntil: 'load', timeout: PAGE_TIMEOUT_MS }
+            );
             await this.randomDelay();
 
-            // 카카오의 경우 리뷰 탭이 앵커로 동작하므로 명시적 대기 필요
             await page.waitForSelector('.list_evaluation li, .review_info', { timeout: 10000 });
 
             const reviews = await page.evaluate(() => {
@@ -124,7 +149,7 @@ export class ReviewCollector {
             });
 
             const filtered = reviews.filter(r => r.content.trim() !== '');
-            console.log(`[Kakao] 수집 ${reviews.length}건 중 내용 있는 리뷰: ${filtered.length}건 (빈 리뷰 ${reviews.length - filtered.length}건 제외)`);
+            console.log(`[Kakao] 수집 ${reviews.length}건 중 내용 있는 리뷰: ${filtered.length}건`);
 
             return filtered.map(r => ({
                 ...r,
@@ -135,7 +160,7 @@ export class ReviewCollector {
             console.error(`[Kakao Error] ${error}`);
             return [];
         } finally {
-            await browser.close();
+            await context.close();
         }
     }
 
@@ -143,16 +168,14 @@ export class ReviewCollector {
      * 네이버 블로그 수집 (Prod-level)
      */
     public async collectNaverBlogs(query: string): Promise<Review[]> {
-        const browser = await chromium.launch({ headless: true });
-        const context = await browser.newContext({
-            userAgent: this.userAgents[Math.floor(Math.random() * this.userAgents.length)] as string
-        });
+        const context = await this.newContext();
         const page = await context.newPage();
+        page.setDefaultTimeout(PAGE_TIMEOUT_MS);
 
         try {
             console.log(`[Naver Blog] Searching for: ${query}...`);
             const searchUrl = `https://search.naver.com/search.naver?where=view&sm=tab_nmw&query=${encodeURIComponent(query)}&nso=`;
-            await page.goto(searchUrl, { waitUntil: 'networkidle' });
+            await page.goto(searchUrl, { waitUntil: 'networkidle', timeout: PAGE_TIMEOUT_MS });
             await this.randomDelay();
 
             const blogs = await page.evaluate(() => {
@@ -184,7 +207,7 @@ export class ReviewCollector {
             console.error(`[Naver Blog Error] ${error}`);
             return [];
         } finally {
-            await browser.close();
+            await context.close();
         }
     }
 
@@ -192,24 +215,17 @@ export class ReviewCollector {
      * 구글 리뷰 수집 (Prod-level)
      */
     public async collectGoogleReviews(placeId: string): Promise<Review[]> {
-        const browser = await chromium.launch({ headless: true });
-        const context = await browser.newContext({
-            userAgent: this.userAgents[Math.floor(Math.random() * this.userAgents.length)] as string
-        });
+        const context = await this.newContext();
         const page = await context.newPage();
+        page.setDefaultTimeout(PAGE_TIMEOUT_MS);
 
         try {
             console.log(`[Google Maps] Accessing Place ID: ${placeId}...`);
-            // 구글 맵 리뷰 페이지로 직접 이동 (cid 사용 가능 시)
             const url = `https://www.google.com/maps/search/?api=1&query=한마음식당&query_place_id=${placeId}`;
-            await page.goto(url, { waitUntil: 'networkidle' });
+            await page.goto(url, { waitUntil: 'networkidle', timeout: PAGE_TIMEOUT_MS });
             await this.randomDelay();
 
-            // 리스토랑 상세 정보에서 리뷰 버튼 클릭 시뮬레이션 (상세 URL이 없을 경우 검색 후 진입 필요)
-            // 여기서는 Place ID 기반의 직접적인 접근이 가능한 상황이라 가정하거나, 검색 결과 기반으로 동작하도록 설계
-
             const reviews = await page.evaluate(() => {
-                // 구글 맵 셀렉터는 매우 가변적이므로 주요 데이터 속성 및 클래스 혼용
                 const items = document.querySelectorAll('.jfti1e, .wiI7pd, div[data-review-id]');
                 return Array.from(items).slice(0, 5).map(item => {
                     const author = item.querySelector('.d480Kc, .TSr2u')?.textContent?.trim() || '익명';
@@ -224,7 +240,7 @@ export class ReviewCollector {
             });
 
             const filtered = reviews.filter(r => r.content.trim() !== '');
-            console.log(`[Google] 수집 ${reviews.length}건 중 내용 있는 리뷰: ${filtered.length}건 (빈 리뷰 ${reviews.length - filtered.length}건 제외)`);
+            console.log(`[Google] 수집 ${reviews.length}건 중 내용 있는 리뷰: ${filtered.length}건`);
 
             return filtered.map(r => ({
                 ...r,
@@ -235,7 +251,7 @@ export class ReviewCollector {
             console.error(`[Google Error] ${error}`);
             return [];
         } finally {
-            await browser.close();
+            await context.close();
         }
     }
 }
@@ -247,8 +263,8 @@ async function bootstrap() {
     console.log('--- 🚀 수석 개발자 리뷰 수집 파이프라인 가동 ---');
 
     const [naverResult, kakaoResult] = await Promise.all([
-        collector.collectNaverReviews('86727483'), // 한마음 식당 Naver Place ID
-        collector.collectKakaoReviews('20641502')  // 한마음 식당 Kakao Place ID
+        collector.collectNaverReviews('86727483'),
+        collector.collectKakaoReviews('20641502')
     ]);
 
     console.log(`\n[결과 리포트]`);
@@ -264,6 +280,8 @@ async function bootstrap() {
         console.log('\n[필터링된 리뷰 샘플]');
         console.log(JSON.stringify(filteredTotal[0], null, 2));
     }
+
+    await collector.close();
 }
 
 // bootstrap().catch(console.error);

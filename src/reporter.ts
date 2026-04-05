@@ -46,10 +46,10 @@ class Reporter {
      */
     public updateFrontendReviewFeed(reviews: Review[]): void {
         const newReviews: FrontendReview[] = reviews
-            .filter(r => r.content && r.content.length > 10 && PLATFORM_MAP[r.platform])
+            .filter(r => r.content && r.content.length > 10 && PLATFORM_MAP[r.platform] !== undefined)
             .map(r => ({
                 author: r.author,
-                platform: PLATFORM_MAP[r.platform],
+                platform: PLATFORM_MAP[r.platform] as FrontendReview['platform'],
                 rating: r.rating,
                 content: r.content,
                 date: r.date,
@@ -73,7 +73,10 @@ class Reporter {
         });
 
         const feed = merged.slice(0, MAX_FEED_SIZE);
-        fs.writeFileSync(FRONTEND_REVIEWS_PATH, JSON.stringify(feed, null, 2), 'utf-8');
+        // atomic write: 임시 파일에 먼저 쓰고 rename으로 교체 (Race Condition 방지)
+        const tmpPath = `${FRONTEND_REVIEWS_PATH}.tmp`;
+        fs.writeFileSync(tmpPath, JSON.stringify(feed, null, 2), 'utf-8');
+        fs.renameSync(tmpPath, FRONTEND_REVIEWS_PATH);
         console.log(`> 랜딩페이지 리뷰 피드 업데이트: ${feed.length}건 (신규 ${newReviews.length}건 반영)`);
     }
 
@@ -118,7 +121,10 @@ class Reporter {
             recentReviews,
         };
 
-        fs.writeFileSync(FRONTEND_STATS_PATH, JSON.stringify(stats, null, 2), 'utf-8');
+        // atomic write: 임시 파일에 먼저 쓰고 rename으로 교체 (Race Condition 방지)
+        const tmpPath = `${FRONTEND_STATS_PATH}.tmp`;
+        fs.writeFileSync(tmpPath, JSON.stringify(stats, null, 2), 'utf-8');
+        fs.renameSync(tmpPath, FRONTEND_STATS_PATH);
         console.log('> 관리자 대시보드 stats.json 업데이트 완료');
     }
 
@@ -134,7 +140,9 @@ class Reporter {
         // 가장 최근 파일 (오늘 제외하고 이전 것)
         if (files.length < 2) return null;
         try {
-            const content = fs.readFileSync(path.join(this.reportDir, files[1]), 'utf-8');
+            const filename = files[1];
+            if (!filename) return null;
+            const content = fs.readFileSync(path.join(this.reportDir, filename), 'utf-8');
             return JSON.parse(content) as DailyReport;
         } catch {
             return null;
