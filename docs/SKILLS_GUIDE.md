@@ -16,6 +16,10 @@
 | **canvas-design** | 시각 예술 및 레이아웃을 .png 및 .pdf 형태로 생성합니다. |
 | **sleek-design-mobile-apps** | 고품질 모바일 앱 화면 디자인 및 UI 구축을 지원합니다. |
 | **web-design-guidelines** | UI 코드의 웹 인터페이스 가이드라인 준수 여부 검토(접근성, UX 등). |
+| **supanova-taste-skill** | 한국어 최적화(Pretendard) 및 고품질 프리미엄 랜딩 페이지 제작 엔진. |
+| **supanova-redesign-skill** | 기존 디자인의 문제점을 진단하고 고사양 디자인으로 업그레이드. |
+| **supanova-soft-skill** | 유리 질감(Glassmorphism) 및 부드러운 애니메이션 등 미학적 디테일 적용. |
+| **supanova-output-skill** | 코드 생략을 방지하고 완전한 형태의 결과물 출력을 강제하는 메타 스킬. |
 
 ### 💻 3. 개발 (Development)
 | 스킬명 | 주요 기능 (한 줄 요약) |
@@ -23,6 +27,7 @@
 | **vercel-react-best-practices** | React 및 Next.js 성능 최적화 가이드라인을 제공합니다. |
 | **vercel-react-native-skills** | 고성능 모바일 앱 개발(React Native/Expo) 베스트 프랙티스를 지원합니다. |
 | **performance-profiler** | 애플리케이션의 성능 병목 지점을 분석하고 최적화 방안을 제시합니다. |
+| **install-duckdb** | DuckDB 확장 프로그램 설치 및 CLI 환경 관리를 지원합니다. |
 
 ### 🛠️ 4. QA & 디버깅 (QA & Debugging)
 | 스킬명 | 주요 기능 (한 줄 요약) |
@@ -39,27 +44,26 @@
 | **seo** | 검색 엔진 최적화(SEO)를 위해 메타 태그, 구조화 데이터 등을 분석하고 수정합니다. |
 | **pptx** | .pptx 프레젠테이션 파일을 생성, 수정 및 분석합니다. |
 | **pdf** | PDF 문서의 텍스트 추출, 병합, 분할 및 변환을 지원합니다. |
-| **docx** | 표와 서식이 포함된 전문적인 .docx 문서를 작성하고 수정합니다. |
+| **docx** | 표 및 서식이 포함된 전문적인 .docx 문서를 작성하고 수정합니다. |
 
 ### 🤖 6. 자동화 (Automation)
 | 스킬명 | 주요 기능 (한 줄 요약) |
 | :--- | :--- |
 | **agent-browser** | 웹 브라우저를 직접 제어하여 탐색 및 데이터 추출 작업을 자동화합니다. |
+| **read-memories** | 이전 세션 로그를 분석하여 과거의 결정이나 컨텍스트를 복원합니다. |
 
-### 📌 7. 참고 에이전트 (Reference Agents)
-> 설치하지 않고 필요 시 참고용으로 사용하는 외부 에이전트 프롬프트입니다.
-> 출처: [agency-agents](https://github.com/msitarzewski/agency-agents)
-
-| 파일명 | 주요 기능 (한 줄 요약) |
+### 📊 8. 데이터 분석 (Data Analysis)
+| 스킬명 | 주요 기능 (한 줄 요약) |
 | :--- | :--- |
-| **[marketing-instagram-curator](./reference-agents/marketing-instagram-curator.md)** | 인스타그램 콘텐츠 큐레이션, 피드 전략, 해시태그 최적화. |
-| **[marketing-content-creator](./reference-agents/marketing-content-creator.md)** | 마케팅 콘텐츠 기획 및 제작 (블로그, SNS, 캠페인 등). |
-| **[specialized-korean-business-navigator](./reference-agents/specialized-korean-business-navigator.md)** | 한국 비즈니스 환경에 특화된 전략 및 커뮤니케이션 가이드. |
+| **query** | SQL 또는 자연어로 DuckDB 데이터베이스 및 파일(CSV, Parquet 등)을 쿼리합니다. |
+| **read-file** | CSV, JSON, Parquet, Excel 등 다양한 데이터 파일을 즉시 탐색하고 분석합니다. |
+| **attach-db** | DuckDB 데이터베이스 파일을 연결하고 스키마를 관리합니다. |
+| **duckdb-docs** | DuckDB 공식 문서 및 SQL 문법을 검색하여 기술 지원을 제공합니다. |
 
-### ⚖️ 8. 개발 표준 및 가이드라인 (Dev Standards)
+### ⚖️ 7. 개발 표준 및 가이드라인 (Dev Standards)
 | 가이드명 | 내용 요약 |
 | :--- | :--- |
 | **[encoding-issue](./ENCODING_GUIDE.md)** | 인코딩(BOM/Mojibake) 문제 방지 및 해결 가이드 (Vite/PowerShell 환경). |
 
 ---
-*마지막 업데이트: 2026-03-19*
+*마지막 업데이트: 2026-03-21*
