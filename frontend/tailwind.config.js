@@ -23,6 +23,7 @@ export default {
       fontFamily: {
         'serif-kr': ['"Noto Serif KR"', 'serif'],
         'sans-kr': ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        'myeongjo': ['"Nanum Myeongjo"', 'serif'],
         'serif': ['"Noto Serif KR"', 'serif'], // 호환성
         'sans': ['Pretendard', 'sans-serif'], // 호환성
       },

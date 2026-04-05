@@ -1,10 +1,11 @@
 import React, { useState, useCallback, lazy, Suspense, useEffect, useRef } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
-import { Phone, Share2, MapPin, Instagram, MessageCircle } from 'lucide-react';
+import { Share2, MapPin, MessageCircle } from 'lucide-react';
 
 // Components
 import HeroSection from './components/HeroSection';
+import VisualSection from './components/VisualSection';
 import TodayPromo from './components/TodayPromo';
 import SignatureMenus from './components/SignatureMenus';
 import RewardsSection from './components/RewardsSection';
@@ -130,7 +131,9 @@ const App = () => {
             {/* Main Content */}
             <main className="relative z-10 max-w-3xl mx-auto">
                 <HeroSection marketingCopy={STORE_INFO.marketingCopy} />
-                
+
+                <VisualSection />
+
                 <section className="reveal-on-scroll">
                     <TodayPromo />
                 </section>
@@ -147,32 +150,6 @@ const App = () => {
                     <ReviewsSection reviews={reviewData} />
                 </section>
 
-                {/* Editorial Call to Actions */}
-                <section className="px-6 py-20 reveal-on-scroll">
-                    <div className="bg-hb-beige p-10 rounded-[2.5rem] border border-hb-border relative overflow-hidden group">
-                        <div className="relative z-10 text-center">
-                            <span className="text-hb-gold font-bold text-xs tracking-wide-editorial uppercase mb-4 block">Reservation & Guide</span>
-                            <h3 className="text-3xl font-black mb-10 leading-tight">낡은 문 너머의<br/>진한 여운을 경험하세요</h3>
-                            
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <a 
-                                    href={`tel:${STORE_INFO.phone}`} 
-                                    className="flex items-center justify-center gap-3 bg-hb-brown text-hb-cream p-5 rounded-2xl font-bold hover:bg-hb-brown/90 transition-all shadow-premium"
-                                >
-                                    <Phone size={20} />
-                                    <span>지금 전화로 예약하기</span>
-                                </a>
-                                <button 
-                                    onClick={handleOpenLocation}
-                                    className="flex items-center justify-center gap-3 bg-white text-hb-brown p-5 rounded-2xl font-bold hover:bg-hb-cream transition-all border border-hb-border shadow-soft"
-                                >
-                                    <MapPin size={20} />
-                                    <span>매장 위치 확인하기</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </main>
 
             <Footer onShare={handleShare} />

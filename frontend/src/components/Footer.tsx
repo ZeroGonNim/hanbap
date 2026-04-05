@@ -1,34 +1,48 @@
 import React from 'react';
-import { MapPin, Phone } from 'lucide-react';
-
 import { STORE_INFO } from '../constants/storeInfo';
 
 interface FooterProps {
     onShare: () => void;
 }
 
-const Footer = React.memo<FooterProps>(({ onShare }) => {
+const Footer = React.memo<FooterProps>(({ onShare: _ }) => {
     return (
-        <footer className="bg-brand py-6 px-6 text-warm-beige text-center">
-            <div className="max-w-md mx-auto space-y-4">
-                <div className="space-y-4">
-                    <h3 className="font-serif text-2xl text-warm-beige font-bold tracking-widest uppercase">{STORE_INFO.name.replace(' ', '')}</h3>
-                    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs leading-relaxed text-warm-beige/60">
-                        <p className="flex items-center gap-1.5">
-                            <MapPin size={12} className="shrink-0" />
-                            <span>{STORE_INFO.address}</span>
-                        </p>
-                        <span className="hidden sm:inline text-warm-beige/30">|</span>
-                        <a href={`tel:${STORE_INFO.phone}`} className="flex items-center gap-1.5 hover:text-white transition-colors">
-                            <Phone size={12} className="shrink-0" aria-hidden="true" />
-                            <span>{STORE_INFO.phone}</span>
-                        </a>
-                    </div>
-                </div>
+        <footer className="py-12 md:py-14 px-8 bg-hb-brown text-hb-beige text-center">
+            <h2 className="text-[1.8rem] mb-2 font-myeongjo">{STORE_INFO.name}</h2>
+            <div className="text-[0.85rem] mb-6 leading-[1.8]" style={{ color: 'rgba(245,237,227,0.5)' }}>
+                {STORE_INFO.address}<br />
+                {STORE_INFO.phone}<br />
+                매일 11:00 - 22:00 (브레이크타임 15:00 - 17:00)
+            </div>
 
-                <p className="text-[10px] tracking-widest uppercase opacity-50 pt-2">
-                    © 2026 Hanmaeum Restaurant. All rights reserved.
-                </p>
+            <div className="flex flex-col gap-2.5 max-w-[480px] mx-auto">
+                <a
+                    href={`tel:${STORE_INFO.phone}`}
+                    className="block w-full bg-hb-beige text-hb-brown py-5 text-[1.1rem] font-black rounded-[4px] hover:bg-white transition-colors no-underline"
+                >
+                    지금 전화 문의하기
+                </a>
+                <a
+                    href={STORE_INFO.mapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full py-5 text-[1.1rem] font-black rounded-[4px] no-underline transition-colors"
+                    style={{
+                        background: 'transparent',
+                        border: '1px solid rgba(245,237,227,0.3)',
+                        color: '#F5EDE3',
+                    }}
+                    onMouseOver={e => {
+                        (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(245,237,227,0.1)';
+                        (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(245,237,227,0.6)';
+                    }}
+                    onMouseOut={e => {
+                        (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+                        (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(245,237,227,0.3)';
+                    }}
+                >
+                    오시는 길 →
+                </a>
             </div>
         </footer>
     );
