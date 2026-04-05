@@ -1,10 +1,10 @@
 name: 인스타그램 자동 포스팅
 
 on:
-  schedule:
-    # 백업용 (daily-pipeline 체이닝 실패 시 대비)
-    - cron: '0 2 * * *'
-  workflow_dispatch: # 수동 실행 + daily-pipeline 체이닝 트리거
+  # ⏸️ 인스타 자동 포스팅 일시 중지 (재개 시 아래 schedule 블록 주석 해제)
+  # schedule:
+  #   - cron: '0 2 * * *'  # 백업용 (daily-pipeline 체이닝 실패 시 대비)
+  workflow_dispatch: # 수동 실행은 유지
 
 permissions:
   contents: write
