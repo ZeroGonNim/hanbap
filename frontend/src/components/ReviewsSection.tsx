@@ -60,7 +60,7 @@ const ReviewsSection = React.memo<ReviewsSectionProps>(({ reviews }) => {
                     LATEST REVIEWS
                 </span>
                 <h2 className="text-[2rem] font-black mt-4">
-                    {reviews.length > 0 ? `${reviews.length}명이 인정한 맛` : '방문 후기'}
+                    {reviews.length > 0 ? '방문객이 인정한 맛' : '방문 후기'}
                 </h2>
             </div>
 
