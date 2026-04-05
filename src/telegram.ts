@@ -1,11 +1,11 @@
 import https from 'https';
 
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
-const CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 export function sendTelegram(message: string): Promise<void> {
     if (!BOT_TOKEN || !CHAT_ID) {
-        console.log('⚠️  텔레그램 환경변수 미설정 — 알림을 건너뜁니다.');
+        console.warn('[telegram] TELEGRAM_BOT_TOKEN 또는 TELEGRAM_CHAT_ID 미설정 — 알림을 건너뜁니다.');
         return Promise.resolve();
     }
 
